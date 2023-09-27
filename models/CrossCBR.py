@@ -79,6 +79,8 @@ class CrossCBR(nn.Module):
         self.num_layers = self.conf["num_layers"]
         self.c_temp = self.conf["c_temp"]
 
+        self.UI_layer_coefs = torch.FloatTensor(self.conf["UI_layers"]).unsqueeze(0).unsqueeze(-1).to(self.device)
+
 
     def init_md_dropouts(self):
         self.item_level_dropout = nn.Dropout(self.conf["item_level_ratio"], True)
@@ -173,7 +175,7 @@ class CrossCBR(nn.Module):
         self.bundle_agg_graph_ori = to_tensor(bi_graph).to(device)
 
 
-    def one_propagate(self, graph, A_feature, B_feature, mess_dropout, test):
+    def one_propagate(self, graph, A_feature, B_feature, mess_dropout, test, layer_coefs=None):
         features = torch.cat((A_feature, B_feature), 0)
         all_features = [features]
 
@@ -186,6 +188,8 @@ class CrossCBR(nn.Module):
             all_features.append(F.normalize(features, p=2, dim=1))
 
         all_features = torch.stack(all_features, 1)
+        if layer_coefs is not None:
+            all_features *= layer_coefs
         all_features = torch.sum(all_features, dim=1).squeeze(1)
 
         A_feature, B_feature = torch.split(all_features, (A_feature.shape[0], B_feature.shape[0]), 0)
@@ -215,9 +219,9 @@ class CrossCBR(nn.Module):
 
         # replace UI = UBI
         if test:
-            IL_users_feature, IL_items_feature = self.one_propagate(self.item_b_level_graph_ori, self.users_feature, self.items_feature, self.item_level_dropout, test)
+            IL_users_feature, IL_items_feature = self.one_propagate(self.item_b_level_graph_ori, self.users_feature, self.items_feature, self.item_level_dropout, test, self.UI_layer_coefs)
         else:
-            IL_users_feature, IL_items_feature = self.one_propagate(self.item_b_level_graph, self.users_feature, self.items_feature, self.item_level_dropout, test)
+            IL_users_feature, IL_items_feature = self.one_propagate(self.item_b_level_graph, self.users_feature, self.items_feature, self.item_level_dropout, test, self.UI_layer_coefs)
 
 
         # aggregate the items embeddings within one bundle to obtain the bundle representation

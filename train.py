@@ -147,7 +147,8 @@ def main():
 
                 pbar.set_description("epoch: %d, loss: %.4f, bpr_loss: %.4f, c_loss: %.4f" %(epoch, loss_scalar, bpr_loss_scalar, c_loss_scalar))
 
-                if (batch_anchor+1) % test_interval_bs == 0:  
+                if (batch_anchor+1) % test_interval_bs == 0:
+                    print('\n')
                     metrics = {}
                     metrics["val"] = test(model, dataset.val_loader, conf)
                     metrics["test"] = test(model, dataset.test_loader, conf)
