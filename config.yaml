@@ -23,7 +23,7 @@ Youshu:
   c_temps: [0.25] # the temperature in the contrastive loss: tau
 
   epochs: 100 # number of epochs to train
-  test_interval: 5 # by how many epochs to run the validation and testing.
+  test_interval: 1 # by how many epochs to run the validation and testing.
 
 
 NetEase:

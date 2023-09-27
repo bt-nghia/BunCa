@@ -62,6 +62,7 @@ class CrossCBR(nn.Module):
 
         assert isinstance(raw_graph, list)
         self.ub_graph, self.ui_graph, self.bi_graph = raw_graph
+        self.ubi_graph = self.ub_graph @ self.bi_graph
 
         # generate the graph without any dropouts for testing
         self.get_item_level_graph_ori()
@@ -108,12 +109,21 @@ class CrossCBR(nn.Module):
 
         self.item_level_graph = to_tensor(laplace_transform(item_level_graph)).to(device)
 
+        # ubi: no dropout, quick draft
+        ubi_graph = self.ubi_graph
+        item_b_level_graph = sp.bmat([[sp.csr_matrix((ubi_graph.shape[0], ubi_graph.shape[0])), ubi_graph], [ubi_graph.T, sp.csr_matrix((ubi_graph.shape[1], ubi_graph.shape[1]))]])
+        self.item_b_level_graph = to_tensor(laplace_transform(item_b_level_graph)).to(device)
 
     def get_item_level_graph_ori(self):
         ui_graph = self.ui_graph
         device = self.device
         item_level_graph = sp.bmat([[sp.csr_matrix((ui_graph.shape[0], ui_graph.shape[0])), ui_graph], [ui_graph.T, sp.csr_matrix((ui_graph.shape[1], ui_graph.shape[1]))]])
         self.item_level_graph_ori = to_tensor(laplace_transform(item_level_graph)).to(device)
+        
+        # ubi
+        ubi_graph = self.ubi_graph
+        item_b_level_graph = sp.bmat([[sp.csr_matrix((ubi_graph.shape[0], ubi_graph.shape[0])), ubi_graph], [ubi_graph.T, sp.csr_matrix((ubi_graph.shape[1], ubi_graph.shape[1]))]])
+        self.item_b_level_graph_ori = to_tensor(laplace_transform(item_b_level_graph)).to(device)
 
 
     def get_bundle_level_graph(self):
@@ -198,10 +208,17 @@ class CrossCBR(nn.Module):
 
     def propagate(self, test=False):
         #  =============================  item level propagation  =============================
+        # if test:
+        #     IL_users_feature, IL_items_feature = self.one_propagate(self.item_level_graph_ori, self.users_feature, self.items_feature, self.item_level_dropout, test)
+        # else:
+        #     IL_users_feature, IL_items_feature = self.one_propagate(self.item_level_graph, self.users_feature, self.items_feature, self.item_level_dropout, test)
+
+        # replace UI = UBI
         if test:
-            IL_users_feature, IL_items_feature = self.one_propagate(self.item_level_graph_ori, self.users_feature, self.items_feature, self.item_level_dropout, test)
+            IL_users_feature, IL_items_feature = self.one_propagate(self.item_b_level_graph_ori, self.users_feature, self.items_feature, self.item_level_dropout, test)
         else:
-            IL_users_feature, IL_items_feature = self.one_propagate(self.item_level_graph, self.users_feature, self.items_feature, self.item_level_dropout, test)
+            IL_users_feature, IL_items_feature = self.one_propagate(self.item_b_level_graph, self.users_feature, self.items_feature, self.item_level_dropout, test)
+
 
         # aggregate the items embeddings within one bundle to obtain the bundle representation
         IL_bundles_feature = self.get_IL_bundle_rep(IL_items_feature, test)
