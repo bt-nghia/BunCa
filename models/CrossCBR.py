@@ -62,7 +62,6 @@ class CrossCBR(nn.Module):
 
         assert isinstance(raw_graph, list)
         self.ub_graph, self.ui_graph, self.bi_graph = raw_graph
-        self.ubi_graph = self.ub_graph @ self.bi_graph
 
         # generate the graph without any dropouts for testing
         self.get_item_level_graph_ori()
@@ -78,8 +77,6 @@ class CrossCBR(nn.Module):
 
         self.num_layers = self.conf["num_layers"]
         self.c_temp = self.conf["c_temp"]
-
-        self.UI_layer_coefs = torch.FloatTensor(self.conf["UI_layers"]).unsqueeze(0).unsqueeze(-1).to(self.device)
 
 
     def init_md_dropouts(self):
@@ -111,21 +108,12 @@ class CrossCBR(nn.Module):
 
         self.item_level_graph = to_tensor(laplace_transform(item_level_graph)).to(device)
 
-        # ubi: no dropout, quick draft
-        ubi_graph = self.ubi_graph
-        item_b_level_graph = sp.bmat([[sp.csr_matrix((ubi_graph.shape[0], ubi_graph.shape[0])), ubi_graph], [ubi_graph.T, sp.csr_matrix((ubi_graph.shape[1], ubi_graph.shape[1]))]])
-        self.item_b_level_graph = to_tensor(laplace_transform(item_b_level_graph)).to(device)
 
     def get_item_level_graph_ori(self):
         ui_graph = self.ui_graph
         device = self.device
         item_level_graph = sp.bmat([[sp.csr_matrix((ui_graph.shape[0], ui_graph.shape[0])), ui_graph], [ui_graph.T, sp.csr_matrix((ui_graph.shape[1], ui_graph.shape[1]))]])
         self.item_level_graph_ori = to_tensor(laplace_transform(item_level_graph)).to(device)
-        
-        # ubi
-        ubi_graph = self.ubi_graph
-        item_b_level_graph = sp.bmat([[sp.csr_matrix((ubi_graph.shape[0], ubi_graph.shape[0])), ubi_graph], [ubi_graph.T, sp.csr_matrix((ubi_graph.shape[1], ubi_graph.shape[1]))]])
-        self.item_b_level_graph_ori = to_tensor(laplace_transform(item_b_level_graph)).to(device)
 
 
     def get_bundle_level_graph(self):
@@ -175,7 +163,7 @@ class CrossCBR(nn.Module):
         self.bundle_agg_graph_ori = to_tensor(bi_graph).to(device)
 
 
-    def one_propagate(self, graph, A_feature, B_feature, mess_dropout, test, layer_coefs=None):
+    def one_propagate(self, graph, A_feature, B_feature, mess_dropout, test):
         features = torch.cat((A_feature, B_feature), 0)
         all_features = [features]
 
@@ -188,8 +176,6 @@ class CrossCBR(nn.Module):
             all_features.append(F.normalize(features, p=2, dim=1))
 
         all_features = torch.stack(all_features, 1)
-        if layer_coefs is not None:
-            all_features *= layer_coefs
         all_features = torch.sum(all_features, dim=1).squeeze(1)
 
         A_feature, B_feature = torch.split(all_features, (A_feature.shape[0], B_feature.shape[0]), 0)
@@ -212,17 +198,10 @@ class CrossCBR(nn.Module):
 
     def propagate(self, test=False):
         #  =============================  item level propagation  =============================
-        # if test:
-        #     IL_users_feature, IL_items_feature = self.one_propagate(self.item_level_graph_ori, self.users_feature, self.items_feature, self.item_level_dropout, test)
-        # else:
-        #     IL_users_feature, IL_items_feature = self.one_propagate(self.item_level_graph, self.users_feature, self.items_feature, self.item_level_dropout, test)
-
-        # replace UI = UBI
         if test:
-            IL_users_feature, IL_items_feature = self.one_propagate(self.item_b_level_graph_ori, self.users_feature, self.items_feature, self.item_level_dropout, test, self.UI_layer_coefs)
+            IL_users_feature, IL_items_feature = self.one_propagate(self.item_level_graph_ori, self.users_feature, self.items_feature, self.item_level_dropout, test)
         else:
-            IL_users_feature, IL_items_feature = self.one_propagate(self.item_b_level_graph, self.users_feature, self.items_feature, self.item_level_dropout, test, self.UI_layer_coefs)
-
+            IL_users_feature, IL_items_feature = self.one_propagate(self.item_level_graph, self.users_feature, self.items_feature, self.item_level_dropout, test)
 
         # aggregate the items embeddings within one bundle to obtain the bundle representation
         IL_bundles_feature = self.get_IL_bundle_rep(IL_items_feature, test)
