@@ -71,12 +71,6 @@ class CrossCBR(nn.Module):
         self.ovl_ui = self.ubi_graph.tocsr().multiply(self.ui_graph.tocsr())
         self.ovl_ui = self.ovl_ui > 0
         self.non_ovl_ui = self.ui_graph - self.ovl_ui
-
-        # print(self.ovl_ui.getnnz())
-        # print(self.non_ovl_ui.getnnz())
-        # print(self.ui_graph.getnnz())
-
-        # weights for overlap try sum =1 or 2 times
         self.ui_graph = self.ovl_ui * self.w1 + self.non_ovl_ui * self.w2
 
         # generate the graph without any dropouts for testing
@@ -272,8 +266,8 @@ class CrossCBR(nn.Module):
                 
         BIL_users_feature = self.get_IL_user_rep(IL_items_feature2, test)
 
-        fuse_users_feature = IL_users_feature * 0.8 + BIL_users_feature * 0.2
-        fuse_bundles_feature = IL_bundles_feature * 0.8 + BIL_bundles_feature * 0.2
+        fuse_users_feature = IL_users_feature * 0.2 + BIL_users_feature * 0.8
+        fuse_bundles_feature = IL_bundles_feature * 0.2 + BIL_bundles_feature * 0.8
 
         #  ============================= bundle level propagation =============================
         if test:
