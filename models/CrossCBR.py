@@ -67,11 +67,7 @@ class CrossCBR(nn.Module):
         self.ub_graph, self.ui_graph, self.bi_graph = raw_graph
 
         self.ubi_graph = self.ub_graph @ self.bi_graph
-        
-        self.ovl_ui = self.ubi_graph.tocsr().multiply(self.ui_graph.tocsr())
-        self.ovl_ui = self.ovl_ui > 0
-        self.non_ovl_ui = self.ui_graph - self.ovl_ui
-        self.ui_graph = self.ovl_ui + self.non_ovl_ui
+        self.ui_graph = self.ubi_graph
 
         # generate the graph without any dropouts for testing
         self.get_item_level_graph_ori()
