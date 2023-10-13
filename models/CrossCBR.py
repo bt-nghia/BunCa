@@ -58,20 +58,38 @@ class CrossCBR(nn.Module):
         self.num_bundles = conf["num_bundles"]
         self.num_items = conf["num_items"]
 
+        self.w1 = conf["w1"]
+        self.w2 = conf["w2"]
+
         self.init_emb()
 
         assert isinstance(raw_graph, list)
         self.ub_graph, self.ui_graph, self.bi_graph = raw_graph
 
+        self.ubi_graph = self.ub_graph @ self.bi_graph
+        
+        self.ovl_ui = self.ubi_graph.tocsr().multiply(self.ui_graph.tocsr())
+        self.ovl_ui = self.ovl_ui > 0
+        self.non_ovl_ui = self.ui_graph - self.ovl_ui
+
+        # print(self.ovl_ui.getnnz())
+        # print(self.non_ovl_ui.getnnz())
+        # print(self.ui_graph.getnnz())
+
+        # weights for overlap try sum =1 or 2 times
+        self.ui_graph = self.ovl_ui * self.w1 + self.non_ovl_ui * self.w2
+
         # generate the graph without any dropouts for testing
         self.get_item_level_graph_ori()
         self.get_bundle_level_graph_ori()
         self.get_bundle_agg_graph_ori()
+        self.get_user_agg_graph_ori()
 
         # generate the graph with the configured dropouts for training, if aug_type is OP or MD, the following graphs with be identical with the aboves
         self.get_item_level_graph()
         self.get_bundle_level_graph()
         self.get_bundle_agg_graph()
+        self.get_user_agg_graph()
 
         self.init_md_dropouts()
 
@@ -96,18 +114,26 @@ class CrossCBR(nn.Module):
 
     def get_item_level_graph(self):
         ui_graph = self.ui_graph
+        bi_graph = self.bi_graph
         device = self.device
         modification_ratio = self.conf["item_level_ratio"]
 
         item_level_graph = sp.bmat([[sp.csr_matrix((ui_graph.shape[0], ui_graph.shape[0])), ui_graph], [ui_graph.T, sp.csr_matrix((ui_graph.shape[1], ui_graph.shape[1]))]])
+        bi_propagate_graph = sp.bmat([[sp.csr_matrix((bi_graph.shape[0], bi_graph.shape[0])), bi_graph], [bi_graph.T, sp.csr_matrix((bi_graph.shape[1], bi_graph.shape[1]))]])
+        self.bi_propagate_graph_ori = to_tensor(laplace_transform(bi_propagate_graph)).to(device)
+        
         if modification_ratio != 0:
             if self.conf["aug_type"] == "ED":
                 graph = item_level_graph.tocoo()
                 values = np_edge_dropout(graph.data, modification_ratio)
                 item_level_graph = sp.coo_matrix((values, (graph.row, graph.col)), shape=graph.shape).tocsr()
 
-        self.item_level_graph = to_tensor(laplace_transform(item_level_graph)).to(device)
+                graph2 = bi_propagate_graph.tocoo()
+                values2 = np_edge_dropout(graph2.data, modification_ratio)
+                bi_propagate_graph = sp.coo_matrix((values2, (graph2.row, graph2.col)), shape=graph2.shape).tocsr()
 
+        self.item_level_graph = to_tensor(laplace_transform(item_level_graph)).to(device)
+        self.bi_propagate_graph = to_tensor(laplace_transform(bi_propagate_graph)).to(device)
 
     def get_item_level_graph_ori(self):
         ui_graph = self.ui_graph
@@ -153,6 +179,20 @@ class CrossCBR(nn.Module):
         bi_graph = sp.diags(1/bundle_size.A.ravel()) @ bi_graph
         self.bundle_agg_graph = to_tensor(bi_graph).to(device)
 
+    def get_user_agg_graph(self):
+        ui_graph = self.ui_graph
+        device = self.device
+
+        if self.conf["aug_type"] == "ED":
+            modification_ratio = self.conf["bundle_agg_ratio"]
+            graph = self.ui_graph.tocoo()
+            values = np_edge_dropout(graph.data, modification_ratio)
+            ui_graph = sp.coo_matrix((values, (graph.row, graph.col)), shape=graph.shape).tocsr()
+
+        user_size = ui_graph.sum(axis=1) + 1e-8
+        ui_graph = sp.diags(1/user_size.A.ravel()) @ ui_graph
+        self.user_agg_graph = to_tensor(ui_graph).to(device)
+
 
     def get_bundle_agg_graph_ori(self):
         bi_graph = self.bi_graph
@@ -161,6 +201,13 @@ class CrossCBR(nn.Module):
         bundle_size = bi_graph.sum(axis=1) + 1e-8
         bi_graph = sp.diags(1/bundle_size.A.ravel()) @ bi_graph
         self.bundle_agg_graph_ori = to_tensor(bi_graph).to(device)
+
+    
+    def get_user_agg_graph_ori(self):
+        ui_graph = self.ui_graph
+        user_size = ui_graph.sum(axis=1) + 1e-8
+        ui_graph = sp.diags(1/user_size.A.ravel()) @ ui_graph
+        self.user_agg_graph_ori = to_tensor(ui_graph).to(self.device)
 
 
     def one_propagate(self, graph, A_feature, B_feature, mess_dropout, test):
@@ -194,6 +241,18 @@ class CrossCBR(nn.Module):
             IL_bundles_feature = self.bundle_agg_dropout(IL_bundles_feature)
 
         return IL_bundles_feature
+    
+    def get_IL_user_rep(self, IL_items_feature, test):
+        if test:
+            IL_users_feature = torch.matmul(self.user_agg_graph_ori, IL_items_feature)
+        else:
+            IL_users_feature = torch.matmul(self.user_agg_graph, IL_items_feature)
+
+        # simple embedding dropout on bundle embeddings
+        if self.conf["bundle_agg_ratio"] != 0 and self.conf["aug_type"] == "MD" and not test:
+            IL_users_feature = self.bundle_agg_dropout(IL_users_feature)
+
+        return IL_users_feature
 
 
     def propagate(self, test=False):
@@ -206,14 +265,24 @@ class CrossCBR(nn.Module):
         # aggregate the items embeddings within one bundle to obtain the bundle representation
         IL_bundles_feature = self.get_IL_bundle_rep(IL_items_feature, test)
 
+        if test:
+            BIL_bundles_feature, IL_items_feature2 = self.one_propagate(self.bi_propagate_graph_ori, self.bundles_feature, self.items_feature, self.item_level_dropout, test)
+        else:
+            BIL_bundles_feature, IL_items_feature2 = self.one_propagate(self.bi_propagate_graph, self.bundles_feature, self.items_feature, self.item_level_dropout, test)
+                
+        BIL_users_feature = self.get_IL_user_rep(IL_items_feature2, test)
+
+        fuse_users_feature = IL_users_feature * 0.8 + BIL_users_feature * 0.2
+        fuse_bundles_feature = IL_bundles_feature * 0.8 + BIL_bundles_feature * 0.2
+
         #  ============================= bundle level propagation =============================
         if test:
             BL_users_feature, BL_bundles_feature = self.one_propagate(self.bundle_level_graph_ori, self.users_feature, self.bundles_feature, self.bundle_level_dropout, test)
         else:
             BL_users_feature, BL_bundles_feature = self.one_propagate(self.bundle_level_graph, self.users_feature, self.bundles_feature, self.bundle_level_dropout, test)
 
-        users_feature = [IL_users_feature, BL_users_feature]
-        bundles_feature = [IL_bundles_feature, BL_bundles_feature]
+        users_feature = [fuse_users_feature, BL_users_feature]
+        bundles_feature = [fuse_bundles_feature, BL_bundles_feature]
 
         return users_feature, bundles_feature
 
