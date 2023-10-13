@@ -25,7 +25,7 @@ Youshu:
   epochs: 100 # number of epochs to train
   test_interval: 1 # by how many epochs to run the validation and testing.
   UI_layers: [0.7, 0.3]
-
+  seed: 2023
 
 NetEase:
   data_path: './datasets'
