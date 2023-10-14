@@ -86,6 +86,14 @@ class CrossCBR(nn.Module):
         self.num_layers = self.conf["num_layers"]
         self.c_temp = self.conf["c_temp"]
 
+        # light-gcn weight
+        temp = self.conf["UB_coefs"]
+        self.UB_coefs = torch.tensor(temp).unsqueeze(0).unsqueeze(-1).to(self.device)
+        temp = self.conf["BI_coefs"]
+        self.BI_coefs = torch.tensor(temp).unsqueeze(0).unsqueeze(-1).to(self.device)
+        temp = self.conf["UI_coefs"]
+        self.UI_coefs = torch.tensor(temp).unsqueeze(0).unsqueeze(-1).to(self.device)
+        del temp
 
     def init_md_dropouts(self):
         self.item_level_dropout = nn.Dropout(self.conf["item_level_ratio"], True)
@@ -200,7 +208,7 @@ class CrossCBR(nn.Module):
         self.user_agg_graph_ori = to_tensor(ui_graph).to(self.device)
 
 
-    def one_propagate(self, graph, A_feature, B_feature, mess_dropout, test):
+    def one_propagate(self, graph, A_feature, B_feature, mess_dropout, test, coefs=None):
         features = torch.cat((A_feature, B_feature), 0)
         all_features = [features]
 
@@ -213,6 +221,8 @@ class CrossCBR(nn.Module):
             all_features.append(F.normalize(features, p=2, dim=1))
 
         all_features = torch.stack(all_features, 1)
+        if coefs is not None:
+            all_features = all_features * coefs
         all_features = torch.sum(all_features, dim=1).squeeze(1)
 
         A_feature, B_feature = torch.split(all_features, (A_feature.shape[0], B_feature.shape[0]), 0)
@@ -248,17 +258,17 @@ class CrossCBR(nn.Module):
     def propagate(self, test=False):
         #  =============================  item level propagation  =============================
         if test:
-            IL_users_feature, IL_items_feature = self.one_propagate(self.item_level_graph_ori, self.users_feature, self.items_feature, self.item_level_dropout, test)
+            IL_users_feature, IL_items_feature = self.one_propagate(self.item_level_graph_ori, self.users_feature, self.items_feature, self.item_level_dropout, test, self.UI_coefs)
         else:
-            IL_users_feature, IL_items_feature = self.one_propagate(self.item_level_graph, self.users_feature, self.items_feature, self.item_level_dropout, test)
+            IL_users_feature, IL_items_feature = self.one_propagate(self.item_level_graph, self.users_feature, self.items_feature, self.item_level_dropout, test, self.UI_coefs)
 
         # aggregate the items embeddings within one bundle to obtain the bundle representation
         IL_bundles_feature = self.get_IL_bundle_rep(IL_items_feature, test)
 
         if test:
-            BIL_bundles_feature, IL_items_feature2 = self.one_propagate(self.bi_propagate_graph_ori, self.bundles_feature, self.items_feature, self.item_level_dropout, test)
+            BIL_bundles_feature, IL_items_feature2 = self.one_propagate(self.bi_propagate_graph_ori, self.bundles_feature, self.items_feature, self.item_level_dropout, test, self.BI_coefs)
         else:
-            BIL_bundles_feature, IL_items_feature2 = self.one_propagate(self.bi_propagate_graph, self.bundles_feature, self.items_feature, self.item_level_dropout, test)
+            BIL_bundles_feature, IL_items_feature2 = self.one_propagate(self.bi_propagate_graph, self.bundles_feature, self.items_feature, self.item_level_dropout, test, self.BI_coefs)
                 
         BIL_users_feature = self.get_IL_user_rep(IL_items_feature2, test)
 
@@ -267,9 +277,9 @@ class CrossCBR(nn.Module):
 
         #  ============================= bundle level propagation =============================
         if test:
-            BL_users_feature, BL_bundles_feature = self.one_propagate(self.bundle_level_graph_ori, self.users_feature, self.bundles_feature, self.bundle_level_dropout, test)
+            BL_users_feature, BL_bundles_feature = self.one_propagate(self.bundle_level_graph_ori, self.users_feature, self.bundles_feature, self.bundle_level_dropout, test, self.UB_coefs)
         else:
-            BL_users_feature, BL_bundles_feature = self.one_propagate(self.bundle_level_graph, self.users_feature, self.bundles_feature, self.bundle_level_dropout, test)
+            BL_users_feature, BL_bundles_feature = self.one_propagate(self.bundle_level_graph, self.users_feature, self.bundles_feature, self.bundle_level_dropout, test, self.UB_coefs)
 
         users_feature = [fuse_users_feature, BL_users_feature]
         bundles_feature = [fuse_bundles_feature, BL_bundles_feature]

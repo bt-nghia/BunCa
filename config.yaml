@@ -26,6 +26,10 @@ Youshu:
   test_interval: 1 # by how many epochs to run the validation and testing.
   UI_layers: [0.7, 0.3]
   seed: 2023
+  UB_coefs: [1, 1]
+  UI_coefs: [1, 1]
+  BI_coefs: [1, 1]
+
 
 NetEase:
   data_path: './datasets'
