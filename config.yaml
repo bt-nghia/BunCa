@@ -27,8 +27,8 @@ Youshu:
   UI_layers: [0.7, 0.3]
   seed: 2023
   UB_coefs: [0.5, 0.5]
-  UI_coefs: [1, 1]
-  BI_coefs: [1, 1]
+  UI_coefs: [0.7, 0.3]
+  BI_coefs: [0.7, 0.3]
 
 
 NetEase:
