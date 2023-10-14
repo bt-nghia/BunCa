@@ -24,7 +24,7 @@ def get_cmd():
     parser.add_argument("-d", "--dataset", default="Youshu", type=str, help="which dataset to use, options: NetEase, Youshu, iFashion")
     parser.add_argument("-m", "--model", default="CrossCBR", type=str, help="which model to use, options: CrossCBR")
     parser.add_argument("-i", "--info", default="", type=str, help="any auxilary info that will be appended to the log file name")
-    parser.add_argument("-w1", "--weightovl", default="0", type=float, help="weight of ovl edges")
+    parser.add_argument("-w1", "--weightovl", default="1", type=float, help="weight of ovl edges")
     parser.add_argument("-w2", "--weightnonovl", default="1", type=float, help="weight of non ovl edges")
 
     args = parser.parse_args()
