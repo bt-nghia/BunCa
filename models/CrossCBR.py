@@ -276,22 +276,24 @@ class CrossCBR(nn.Module):
 
     def propagate(self, test=False):
         #  =============================  item level propagation  =============================
+
+        IL_items_feat = self.nw * self.n_ibi @ self.items_feature + self.sw * self.items_feature
         if test:
-            IL_users_feature, IL_items_feature = self.one_propagate(self.item_level_graph_ori, self.users_feature, self.items_feature, self.item_level_dropout, test, self.UI_coefs)
+            IL_users_feature, IL_items_feature = self.one_propagate(self.item_level_graph_ori, self.users_feature, IL_items_feat, self.item_level_dropout, test, self.UI_coefs)
         else:
-            IL_users_feature, IL_items_feature = self.one_propagate(self.item_level_graph, self.users_feature, self.items_feature, self.item_level_dropout, test, self.UI_coefs)
+            IL_users_feature, IL_items_feature = self.one_propagate(self.item_level_graph, self.users_feature, IL_items_feat, self.item_level_dropout, test, self.UI_coefs)
 
         # aggregate the items embeddings within one bundle to obtain the bundle representation
-        IL_items_feature = self.n_ibi @ IL_items_feature * self.nw + IL_items_feature * self.sw
+        # IL_items_feature = self.n_ibi @ IL_items_feature * self.nw + IL_items_feature * self.sw
         IL_bundles_feature = self.get_IL_bundle_rep(IL_items_feature, test)
 
         if test:
-            BIL_bundles_feature, IL_items_feature2 = self.one_propagate(self.bi_propagate_graph_ori, self.bundles_feature, self.items_feature, self.item_level_dropout, test, self.BI_coefs)
+            BIL_bundles_feature, IL_items_feature2 = self.one_propagate(self.bi_propagate_graph_ori, self.bundles_feature, IL_items_feat, self.item_level_dropout, test, self.BI_coefs)
         else:
-            BIL_bundles_feature, IL_items_feature2 = self.one_propagate(self.bi_propagate_graph, self.bundles_feature, self.items_feature, self.item_level_dropout, test, self.BI_coefs)
+            BIL_bundles_feature, IL_items_feature2 = self.one_propagate(self.bi_propagate_graph, self.bundles_feature, IL_items_feat, self.item_level_dropout, test, self.BI_coefs)
         
         # agg item -> user
-        IL_items_feature2 = self.n_iui @ IL_items_feature2 * self.nw + IL_items_feature2 * self.sw
+        # IL_items_feature2 = self.n_iui @ IL_items_feature2 * self.nw + IL_items_feature2 * self.sw
         BIL_users_feature = self.get_IL_user_rep(IL_items_feature2, test)
 
         # w3: 0.2, w4: 0.8
