@@ -60,6 +60,8 @@ class CrossCBR(nn.Module):
 
         self.w1 = conf["w1"]
         self.w2 = conf["w2"]
+        self.w3 = conf["w3"]
+        self.w4 = conf["w4"]
 
         self.init_emb()
 
@@ -67,7 +69,12 @@ class CrossCBR(nn.Module):
         self.ub_graph, self.ui_graph, self.bi_graph = raw_graph
 
         self.ubi_graph = self.ub_graph @ self.bi_graph
-        self.ui_graph = self.ubi_graph
+
+        self.ovl_ui = self.ubi_graph.tocsr().multiply(self.ui_graph.tocsr())
+        self.ovl_ui = self.ovl_ui > 0
+        self.non_ovl_ui = self.ui_graph - self.ovl_ui
+        # w1: 0.8, w2: 0.2
+        self.ui_graph = self.ovl_ui * self.w1 + self.non_ovl_ui * self.w2
 
         # generate the graph without any dropouts for testing
         self.get_item_level_graph_ori()
@@ -272,8 +279,9 @@ class CrossCBR(nn.Module):
                 
         BIL_users_feature = self.get_IL_user_rep(IL_items_feature2, test)
 
-        fuse_users_feature = IL_users_feature * self.w1 + BIL_users_feature * self.w2
-        fuse_bundles_feature = IL_bundles_feature * self.w1 + BIL_bundles_feature * self.w2
+        # w3: 0.2, w4: 0.8
+        fuse_users_feature = IL_users_feature * self.w3 + BIL_users_feature * self.w4
+        fuse_bundles_feature = IL_bundles_feature * self.w3 + BIL_bundles_feature * self.w4
 
         #  ============================= bundle level propagation =============================
         if test:

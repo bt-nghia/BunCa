@@ -26,6 +26,9 @@ def get_cmd():
     parser.add_argument("-i", "--info", default="", type=str, help="any auxilary info that will be appended to the log file name")
     parser.add_argument("-w1", "--weightovl", default="1", type=float, help="weight of ovl edges")
     parser.add_argument("-w2", "--weightnonovl", default="1", type=float, help="weight of non ovl edges")
+    parser.add_argument("-w3", "--UIweight", default="0.1", type=float, help="UI weight in Item view")
+    parser.add_argument("-w4", "--BIweight", default="0.9", type=float, help="BI weight in Item view")
+
 
     args = parser.parse_args()
 
@@ -57,6 +60,8 @@ def main():
     conf["num_items"] = dataset.num_items
     conf["w1"] = paras["weightovl"]
     conf["w2"] = paras["weightnonovl"]
+    conf["w3"] = paras["UIweight"]
+    conf["w4"] = paras["BIweight"]
 
     os.environ['CUDA_VISIBLE_DEVICES'] = conf["gpu"]
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
