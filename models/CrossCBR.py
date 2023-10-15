@@ -5,6 +5,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import scipy.sparse as sp 
+from gene_ii_asym import load_sp_mat
 
 
 def cal_bpr_loss(pred):
@@ -101,6 +102,17 @@ class CrossCBR(nn.Module):
         temp = self.conf["UI_coefs"]
         self.UI_coefs = torch.tensor(temp).unsqueeze(0).unsqueeze(-1).to(self.device)
         del temp
+
+        # ii-asym matrix
+        n_ibi = load_sp_mat("datasets/Youshu/n_neigh_ibi.npz")
+        n_iui = load_sp_mat("datasets/Youshu/n_neigh_iui.npz")
+        self.n_ibi = to_tensor(n_ibi)
+        self.n_iui = to_tensor(n_iui)
+        self.sw = conf["sw"]
+        self.nw = conf["nw"]
+        # self.temp11 = self.n_ibi @ self.items_feature
+        del n_ibi
+        del n_iui
 
     def init_md_dropouts(self):
         self.item_level_dropout = nn.Dropout(self.conf["item_level_ratio"], True)
@@ -270,13 +282,16 @@ class CrossCBR(nn.Module):
             IL_users_feature, IL_items_feature = self.one_propagate(self.item_level_graph, self.users_feature, self.items_feature, self.item_level_dropout, test, self.UI_coefs)
 
         # aggregate the items embeddings within one bundle to obtain the bundle representation
+        IL_items_feature = self.n_ibi @ IL_items_feature * self.nw + IL_items_feature * self.sw
         IL_bundles_feature = self.get_IL_bundle_rep(IL_items_feature, test)
 
         if test:
             BIL_bundles_feature, IL_items_feature2 = self.one_propagate(self.bi_propagate_graph_ori, self.bundles_feature, self.items_feature, self.item_level_dropout, test, self.BI_coefs)
         else:
             BIL_bundles_feature, IL_items_feature2 = self.one_propagate(self.bi_propagate_graph, self.bundles_feature, self.items_feature, self.item_level_dropout, test, self.BI_coefs)
-                
+        
+        # agg item -> user
+        IL_items_feature2 = self.n_iui @ IL_items_feature2 * self.nw + IL_items_feature2 * self.sw
         BIL_users_feature = self.get_IL_user_rep(IL_items_feature2, test)
 
         # w3: 0.2, w4: 0.8

@@ -28,7 +28,8 @@ def get_cmd():
     parser.add_argument("-w2", "--weightnonovl", default="1", type=float, help="weight of non ovl edges")
     parser.add_argument("-w3", "--UIweight", default="0.1", type=float, help="UI weight in Item view")
     parser.add_argument("-w4", "--BIweight", default="0.9", type=float, help="BI weight in Item view")
-
+    parser.add_argument("-sw", "--sweight", default="1", type=float, help="self weight in i-i matrix")
+    parser.add_argument("-nw", "--nbweight", default="1", type=float, help="all neighbors (aggregated) weight")
 
     args = parser.parse_args()
 
@@ -62,6 +63,8 @@ def main():
     conf["w2"] = paras["weightnonovl"]
     conf["w3"] = paras["UIweight"]
     conf["w4"] = paras["BIweight"]
+    conf["sw"] = paras["sweight"]
+    conf["nw"] = paras["nbweight"]
 
     os.environ['CUDA_VISIBLE_DEVICES'] = conf["gpu"]
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")

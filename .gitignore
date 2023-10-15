@@ -43,3 +43,8 @@ runs/*
 log
 log*
 log/*
+
+datasets/Youshu/ibi_asym.npz
+datasets/Youshu/iui_asym.npz
+datasets/Youshu/n_neigh_ibi.npz
+datasets/Youshu/n_neigh_iui.npz
