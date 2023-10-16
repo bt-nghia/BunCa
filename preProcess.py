@@ -63,8 +63,11 @@ neighbor_ibi = fil_ibi - diag_filter_ibi.tocsc()
 neighbor_iui = fil_iui - diag_filter_iui.tocsc() 
 neighbor_ibi.getnnz(), neighbor_iui.getnnz() # -> match
 
-n_ibi = normalize(neighbor_ibi, norm='l1', axis=1)
-n_iui = normalize(neighbor_iui, norm='l1', axis=1)
+# n_ibi = normalize(neighbor_ibi, norm='l1', axis=1)
+# n_iui = normalize(neighbor_iui, norm='l1', axis=1)
+
+n_ibi = neighbor_ibi
+n_iui = neighbor_iui
 
 sp.save_npz("datasets/Youshu/n_neigh_ibi.npz", n_ibi)
 sp.save_npz("datasets/Youshu/n_neigh_iui.npz", n_iui)

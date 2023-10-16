@@ -106,8 +106,10 @@ class CrossCBR(nn.Module):
         # ii-asym matrix
         n_ibi = load_sp_mat("datasets/Youshu/n_neigh_ibi.npz")
         n_iui = load_sp_mat("datasets/Youshu/n_neigh_iui.npz")
-        self.n_ibi = to_tensor(n_ibi).to(self.device)
-        self.n_iui = to_tensor(n_iui).to(self.device)
+        self.n_ibi = to_tensor(laplace_transform(n_ibi)).to(self.device)
+        self.n_iui = to_tensor(laplace_transform(n_iui)).to(self.device)
+        # self.n_iui = to_tensor(n_iui).to(self.device)
+        # self.n_ibi = to_tensor(n_ibi).to(self.device)
         self.sw = conf["sw"]
         self.nw = conf["nw"]
         # self.temp11 = self.n_ibi @ self.items_feature
