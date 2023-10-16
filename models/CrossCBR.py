@@ -278,8 +278,14 @@ class CrossCBR(nn.Module):
 
     def propagate(self, test=False):
         #  =============================  item level propagation  =============================
+        #  ======== UI =================
+        item_feats = [self.items_feature]
+        for i in range(0, 2):
+            IL_items_feat = self.n_iui @ item_feats[-1]
+            item_feats.append(IL_items_feat)
+        IL_items_feat = torch.stack(item_feats, dim=1)
+        IL_items_feat = torch.mean(IL_items_feat, dim=1)
 
-        IL_items_feat = self.nw * self.n_iui @ self.items_feature + self.sw * self.items_feature
         if test:
             IL_users_feature, IL_items_feature = self.one_propagate(self.item_level_graph_ori, self.users_feature, IL_items_feat, self.item_level_dropout, test, self.UI_coefs)
         else:
@@ -289,7 +295,15 @@ class CrossCBR(nn.Module):
         # IL_items_feature = self.n_ibi @ IL_items_feature * self.nw + IL_items_feature * self.sw
         IL_bundles_feature = self.get_IL_bundle_rep(IL_items_feature, test)
 
-        IL_items_feat2 = self.nw * self.n_ibi @ self.items_feature + self.sw * self.items_feature
+        # ========== BI ================
+        # IL_items_feat2 = self.nw * self.n_ibi @ self.items_feature + self.sw * self.items_feature
+        item_feats2 = [self.items_feature]
+        for i in range(0, 2):
+            IL_items_feat2 = self.n_iui @ item_feats2[-1]
+            item_feats2.append(IL_items_feat2)
+        IL_items_feat2 = torch.stack(item_feats2, dim=1)
+        IL_items_feat2 = torch.mean(IL_items_feat2, dim=1)
+
         if test:
             BIL_bundles_feature, IL_items_feature2 = self.one_propagate(self.bi_propagate_graph_ori, self.bundles_feature, IL_items_feat2, self.item_level_dropout, test, self.BI_coefs)
         else:
