@@ -5,7 +5,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import scipy.sparse as sp 
-from gene_ii_asym import load_sp_mat
+from gene_ii_co_oc import load_sp_mat
 
 
 def cal_bpr_loss(pred):

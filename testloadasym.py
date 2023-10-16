@@ -1,4 +1,4 @@
-from gene_ii_asym import load_sp_mat
+from gene_ii_co_oc import load_sp_mat
 
 iui = load_sp_mat('datasets/Youshu/iui_asym.npz')
 print(iui.getnnz())

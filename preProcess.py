@@ -1,8 +1,9 @@
-from gene_ii_asym import load_sp_mat
-from sklearn.preprocessing import normalize
-import scipy.sparse as sp
-import numpy as np
 import argparse
+import numpy as np
+import scipy.sparse as sp
+from gene_ii_co_oc import load_sp_mat
+from sklearn.preprocessing import normalize
+
 
 def get_cmd():
     parser = argparse.ArgumentParser()

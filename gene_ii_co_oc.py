@@ -1,3 +1,4 @@
+import argparse
 import numpy as np
 import pandas as pd
 import os
@@ -45,10 +46,26 @@ def gen_ii_asym(ix_mat, threshold=0):
     # normalize by row -> asym matrix
     return ii_co
 
+def get_cmd():
+    parser = argparse.ArgumentParser()
+    # experimental settings
+    parser.add_argument("-d", "--dataset", default="Youshu", type=str, help="dataset to train")
+    args = parser.parse_args()
+    return args
+
+def get_stat(path):
+    with open(path, 'r') as f:
+        a, b, c = f.readline().split('\t')
+    return int(a), int(b), int(c)
+
 
 if __name__ == '__main__':
-    users, bundles, items = 8039, 4771, 32770
-    dir = 'datasets/Youshu'
+    
+    paras = get_cmd().__dict__
+    dataset_name = paras["dataset"]
+
+    users, bundles, items = get_stat(f'datasets/{dataset_name}/{dataset_name}_data_size.txt')
+    dir = f'datasets/{dataset_name}'
     path = [dir + '/user_bundle_train.txt',
             dir + '/user_item.txt',
             dir + '/bundle_item.txt']
