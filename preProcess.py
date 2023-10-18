@@ -16,8 +16,8 @@ if __name__=='__main__':
     paras = get_cmd().__dict__
     dataset_name = paras["dataset"]
 
-    path_iui = f"datasets/{dataset_name}/iui_asym.npz"
-    path_ibi = f"datasets/{dataset_name}/ibi_asym.npz"
+    path_iui = f"datasets/{dataset_name}/iui_cooc.npz"
+    path_ibi = f"datasets/{dataset_name}/ibi_cooc.npz"
     save_path_iui = f"datasets/{dataset_name}/n_neigh_iui.npz"
     save_path_ibi = f"datasets/{dataset_name}/n_neigh_ibi.npz"
 

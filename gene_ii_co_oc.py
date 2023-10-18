@@ -81,6 +81,6 @@ if __name__ == '__main__':
     for i, mat in pbar:
         asym_mat.append(gen_ii_asym(mat))
 
-    pbar = tqdm(enumerate(["/iui_asym.npz", "/ibi_asym.npz"]), total = 2, desc="save", ncols=100)
+    pbar = tqdm(enumerate(["/iui_cooc.npz", "/ibi_cooc.npz"]), total = 2, desc="save", ncols=100)
     for i, data in pbar:
         save_sp_mat(asym_mat[i], dir + data)

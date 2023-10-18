@@ -104,17 +104,26 @@ class CrossCBR(nn.Module):
         del temp
 
         # ii-asym matrix
-        n_ibi = load_sp_mat("datasets/Youshu/n_neigh_ibi.npz")
-        n_iui = load_sp_mat("datasets/Youshu/n_neigh_iui.npz")
-        self.n_ibi = to_tensor(laplace_transform(n_ibi)).to(self.device)
-        self.n_iui = to_tensor(laplace_transform(n_iui)).to(self.device)
-        # self.n_iui = to_tensor(n_iui).to(self.device)
-        # self.n_ibi = to_tensor(n_ibi).to(self.device)
+        n_ibi = load_sp_mat("datasets/Youshu/n_neigh_ibi.npz").tocoo()
+        n_iui = load_sp_mat("datasets/Youshu/n_neigh_iui.npz").tocoo()
         self.sw = conf["sw"]
         self.nw = conf["nw"]
-        # self.temp11 = self.n_ibi @ self.items_feature
-        del n_ibi
-        del n_iui
+
+        self.ibi_edge_index = torch.tensor([list(n_ibi.row), list(n_ibi.col)], dtype=torch.int64)
+        self.iui_edge_index = torch.tensor([list(n_iui.row), list(n_iui.col)], dtype=torch.int64)
+        # print(self.iui_edge)
+        self.ibi_params = nn.Parameter(torch.randn(n_ibi.getnnz(), ))
+        self.iui_params = nn.Parameter(torch.randn(n_iui.getnnz(), ))
+        
+        del n_iui, n_ibi
+
+
+    def load_ii_sp_matrix(self, edge_index, vals, shape):
+        ii = torch.sparse.FloatTensor(edge_index, vals, shape)
+        # print(ii)
+        # ii = torch.sparse.softmax(ii, dim=1)
+        return ii
+    
 
     def init_md_dropouts(self):
         self.item_level_dropout = nn.Dropout(self.conf["item_level_ratio"], True)
@@ -277,14 +286,18 @@ class CrossCBR(nn.Module):
 
 
     def propagate(self, test=False):
+
+        iui_mat = self.load_ii_sp_matrix(self.iui_edge_index, self.iui_params, (self.num_items, self.num_items))
+        ibi_mat = self.load_ii_sp_matrix(self.ibi_edge_index, self.ibi_params, (self.num_items, self.num_items))
         #  =============================  item level propagation  =============================
         #  ======== UI =================
-        item_feats = [self.items_feature]
-        for i in range(0, 2):
-            IL_items_feat = self.n_iui @ item_feats[-1]
-            item_feats.append(IL_items_feat)
-        IL_items_feat = torch.stack(item_feats, dim=1)
-        IL_items_feat = torch.mean(IL_items_feat, dim=1)
+        # item_feats = [self.items_feature]
+        # for i in range(0, 2):
+        #     IL_items_feat = self.n_iui @ item_feats[-1]
+        #     item_feats.append(IL_items_feat)
+        # IL_items_feat = torch.stack(item_feats, dim=1)
+        # IL_items_feat = torch.mean(IL_items_feat, dim=1)
+        IL_items_feat = torch.spmm(iui_mat, self.items_feature)
 
         if test:
             IL_users_feature, IL_items_feature = self.one_propagate(self.item_level_graph_ori, self.users_feature, IL_items_feat, self.item_level_dropout, test, self.UI_coefs)
@@ -297,12 +310,14 @@ class CrossCBR(nn.Module):
 
         # ========== BI ================
         # IL_items_feat2 = self.nw * self.n_ibi @ self.items_feature + self.sw * self.items_feature
-        item_feats2 = [self.items_feature]
-        for i in range(0, 2):
-            IL_items_feat2 = self.n_iui @ item_feats2[-1]
-            item_feats2.append(IL_items_feat2)
-        IL_items_feat2 = torch.stack(item_feats2, dim=1)
-        IL_items_feat2 = torch.mean(IL_items_feat2, dim=1)
+        # item_feats2 = [self.items_feature]
+        # for i in range(0, 2):
+        #     IL_items_feat2 = self.n_iui @ item_feats2[-1]
+        #     item_feats2.append(IL_items_feat2)
+        # IL_items_feat2 = torch.stack(item_feats2, dim=1)
+        # IL_items_feat2 = torch.mean(IL_items_feat2, dim=1)
+
+        IL_items_feat2 = torch.spmm(ibi_mat, self.items_feature)
 
         if test:
             BIL_bundles_feature, IL_items_feature2 = self.one_propagate(self.bi_propagate_graph_ori, self.bundles_feature, IL_items_feat2, self.item_level_dropout, test, self.BI_coefs)
