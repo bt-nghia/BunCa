@@ -122,7 +122,7 @@ class CrossCBR(nn.Module):
         ii = torch.sparse.FloatTensor(edge_index, vals, shape)
         # print(ii)
         # ii = torch.sparse.softmax(ii, dim=1)
-        return ii
+        return ii.to(self.device)
     
 
     def init_md_dropouts(self):
