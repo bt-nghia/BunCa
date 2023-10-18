@@ -109,11 +109,11 @@ class CrossCBR(nn.Module):
         self.sw = conf["sw"]
         self.nw = conf["nw"]
 
-        self.ibi_edge_index = torch.tensor([list(n_ibi.row), list(n_ibi.col)], dtype=torch.int64)
-        self.iui_edge_index = torch.tensor([list(n_iui.row), list(n_iui.col)], dtype=torch.int64)
+        self.ibi_edge_index = torch.tensor([list(n_ibi.row), list(n_ibi.col)], dtype=torch.int64).to(self.device)
+        self.iui_edge_index = torch.tensor([list(n_iui.row), list(n_iui.col)], dtype=torch.int64).to(self.device)
         # print(self.iui_edge)
-        self.ibi_params = nn.Parameter(torch.randn(n_ibi.getnnz(), ))
-        self.iui_params = nn.Parameter(torch.randn(n_iui.getnnz(), ))
+        self.ibi_params = nn.Parameter(torch.randn(n_ibi.getnnz(), )).to(self.device)
+        self.iui_params = nn.Parameter(torch.randn(n_iui.getnnz(), )).to(self.device)
         
         del n_iui, n_ibi
 
