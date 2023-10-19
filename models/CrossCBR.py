@@ -112,13 +112,17 @@ class CrossCBR(nn.Module):
         self.ibi_edge_index = torch.tensor([list(n_ibi.row), list(n_ibi.col)], dtype=torch.int64).to(self.device)
         self.iui_edge_index = torch.tensor([list(n_iui.row), list(n_iui.col)], dtype=torch.int64).to(self.device)
         # print(self.iui_edge)
-        self.ibi_params = nn.Parameter(torch.randn(n_ibi.getnnz(), )).to(self.device)
-        self.iui_params = nn.Parameter(torch.randn(n_iui.getnnz(), )).to(self.device)
+        self.ibi_params = torch.exp(nn.Parameter(torch.randn(n_ibi.getnnz(), ))).to(self.device)
+        self.iui_params = torch.exp(nn.Parameter(torch.randn(n_iui.getnnz(), ))).to(self.device)
         
         del n_iui, n_ibi
 
 
     def load_ii_sp_matrix(self, edge_index, vals, shape):
+        '''
+        vals: exp
+        -> normalize & log -> softmax
+        '''
         ii = torch.sparse.FloatTensor(edge_index, vals, shape)
         # print(ii)
         # ii = torch.sparse.softmax(ii, dim=1)
