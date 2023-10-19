@@ -6,6 +6,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import scipy.sparse as sp 
 from gene_ii_co_oc import load_sp_mat
+from torch_geometric.nn import GATv2Conv, GATConv
 
 
 def cal_bpr_loss(pred):
@@ -112,9 +113,11 @@ class CrossCBR(nn.Module):
         self.ibi_edge_index = torch.tensor([list(n_ibi.row), list(n_ibi.col)], dtype=torch.int64).to(self.device)
         self.iui_edge_index = torch.tensor([list(n_iui.row), list(n_iui.col)], dtype=torch.int64).to(self.device)
         # print(self.iui_edge)
-        self.ibi_params = torch.exp(nn.Parameter(torch.randn(n_ibi.getnnz(), ))).to(self.device)
-        self.iui_params = torch.exp(nn.Parameter(torch.randn(n_iui.getnnz(), ))).to(self.device)
-        
+        # self.ibi_params = nn.Parameter(torch.rand(n_ibi.getnnz(), )).to(self.device)
+        # self.iui_params = nn.Parameter(torch.rand(n_iui.getnnz(), )).to(self.device)
+        self.iui_gat_conv = GatConv(in_dim=64, out_dim=64, n_layer=1, dropout=0.1, heads=2, concat=False, self_loop=False)
+        self.ibi_gat_conv = GatConv(in_dim=64, out_dim=64, n_layer=1, dropout=0.1, heads=2, concat=False, self_loop=False)
+
         del n_iui, n_ibi
 
 
@@ -125,6 +128,7 @@ class CrossCBR(nn.Module):
         '''
         ii = torch.sparse.FloatTensor(edge_index, vals, shape)
         # print(ii)
+        # ii_sum = torch.sparse.sum(ii, dim=1)
         # ii = torch.sparse.softmax(ii, dim=1)
         return ii.to(self.device)
     
@@ -291,17 +295,11 @@ class CrossCBR(nn.Module):
 
     def propagate(self, test=False):
 
-        iui_mat = self.load_ii_sp_matrix(self.iui_edge_index, self.iui_params, (self.num_items, self.num_items))
-        ibi_mat = self.load_ii_sp_matrix(self.ibi_edge_index, self.ibi_params, (self.num_items, self.num_items))
+        # iui_mat = self.load_ii_sp_matrix(self.iui_edge_index, self.iui_params, (self.num_items, self.num_items))
+        # ibi_mat = self.load_ii_sp_matrix(self.ibi_edge_index, self.ibi_params, (self.num_items, self.num_items))
         #  =============================  item level propagation  =============================
         #  ======== UI =================
-        # item_feats = [self.items_feature]
-        # for i in range(0, 2):
-        #     IL_items_feat = self.n_iui @ item_feats[-1]
-        #     item_feats.append(IL_items_feat)
-        # IL_items_feat = torch.stack(item_feats, dim=1)
-        # IL_items_feat = torch.mean(IL_items_feat, dim=1)
-        IL_items_feat = torch.spmm(iui_mat, self.items_feature)
+        IL_items_feat = self.iui_gat_conv(self.items_feature, self.iui_edge_index)
 
         if test:
             IL_users_feature, IL_items_feature = self.one_propagate(self.item_level_graph_ori, self.users_feature, IL_items_feat, self.item_level_dropout, test, self.UI_coefs)
@@ -313,16 +311,7 @@ class CrossCBR(nn.Module):
         IL_bundles_feature = self.get_IL_bundle_rep(IL_items_feature, test)
 
         # ========== BI ================
-        # IL_items_feat2 = self.nw * self.n_ibi @ self.items_feature + self.sw * self.items_feature
-        # item_feats2 = [self.items_feature]
-        # for i in range(0, 2):
-        #     IL_items_feat2 = self.n_iui @ item_feats2[-1]
-        #     item_feats2.append(IL_items_feat2)
-        # IL_items_feat2 = torch.stack(item_feats2, dim=1)
-        # IL_items_feat2 = torch.mean(IL_items_feat2, dim=1)
-
-        IL_items_feat2 = torch.spmm(ibi_mat, self.items_feature)
-
+        IL_items_feat2 = self.ibi_gat_conv(self.items_feature, self.ibi_edge_index)
         if test:
             BIL_bundles_feature, IL_items_feature2 = self.one_propagate(self.bi_propagate_graph_ori, self.bundles_feature, IL_items_feat2, self.item_level_dropout, test, self.BI_coefs)
         else:
@@ -415,3 +404,32 @@ class CrossCBR(nn.Module):
 
         scores = torch.mm(users_feature_atom, bundles_feature_atom.t()) + torch.mm(users_feature_non_atom, bundles_feature_non_atom.t())
         return scores
+    
+
+class GatConv(nn.Module):
+    def __init__(self, in_dim, out_dim, n_layer=1, dropout=0.0, heads=2, concat=False, self_loop=True):
+        super(GatConv, self).__init__()
+        self.num_layer = n_layer
+        self.dropout = dropout
+        self.in_dim = in_dim
+        self.out_dim = out_dim
+        self.heads = heads
+        self.concat = concat
+        self.self_loop = self_loop
+        self.convs = nn.ModuleList([GATv2Conv(in_channels=self.in_dim, 
+                                              out_channels=self.out_dim, 
+                                              dropout=self.dropout,
+                                              heads=self.heads,
+                                              concat=self.concat,
+                                              add_self_loops=self.self_loop) 
+                                              for _ in range(self.num_layer)])
+
+
+    def forward(self, x, edge_index):
+        feats = [x]
+        for conv in self.convs:
+            x = conv(x, edge_index)
+            feats.append(x)
+        feat = torch.stack(feats, dim=1)
+        x = torch.mean(feat, dim=1)
+        return x
