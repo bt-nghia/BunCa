@@ -48,3 +48,6 @@ datasets/Youshu/ibi_cooc.npz
 datasets/Youshu/iui_cooc.npz
 datasets/Youshu/n_neigh_ibi.npz
 datasets/Youshu/n_neigh_iui.npz
+
+versionlog
+test
