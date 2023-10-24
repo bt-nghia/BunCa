@@ -57,8 +57,8 @@ if __name__=='__main__':
 
     # --------------------- filter out -----------------------
     n_items = ibi.shape[0]
-    ibi_filter = ibi >= 2
-    iui_filter = iui >= 2
+    ibi_filter = ibi >= 4
+    iui_filter = iui >= 4
 
     # mask all diag weight
     diag_filter_i = sp.coo_matrix(
