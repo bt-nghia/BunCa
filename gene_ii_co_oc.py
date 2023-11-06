@@ -64,7 +64,7 @@ if __name__ == '__main__':
     paras = get_cmd().__dict__
     dataset_name = paras["dataset"]
 
-    if dataset_name in ['Youshu', 'iFashion', 'Netease']:
+    if dataset_name in ['Youshu', 'iFashion', 'Netease', 'food1', 'electronic1', 'clothing1']:
         sep = '\t'
         file_type = '.txt'
     else:

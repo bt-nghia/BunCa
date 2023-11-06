@@ -87,7 +87,7 @@ iFashion:
   file_type: ".txt"
 
 #-------------------------------- amazon datasets --------------------------------
-food:
+food1:
   data_path: './datasets'
   batch_size_train: 128 # the batch size for training
   batch_size_test: 128 # the batch size for testing
@@ -118,11 +118,11 @@ food:
   UB_coefs: [1, 1]
   UI_coefs: [1, 1]
   BI_coefs: [1, 1]
-  sep: ","
-  file_type: ".csv"
+  sep: "\t"
+  file_type: ".txt"
 
 
-electronic:
+electronic1:
   data_path: './datasets'
   batch_size_train: 128 # the batch size for training
   batch_size_test: 128 # the batch size for testing
@@ -153,11 +153,11 @@ electronic:
   UB_coefs: [1, 1]
   UI_coefs: [1, 1]
   BI_coefs: [1, 1]
-  sep: ","
-  file_type: ".csv"
+  sep: "\t"
+  file_type: ".txt"
 
 
-clothing:
+clothing1:
   data_path: './datasets'
   batch_size_train: 128 # the batch size for training
   batch_size_test: 128 # the batch size for testing
@@ -188,5 +188,5 @@ clothing:
   UB_coefs: [1, 1]
   UI_coefs: [1, 1]
   BI_coefs: [1, 1]
-  sep: ","
-  file_type: ".csv"
+  sep: "\t"
+  file_type: ".txt"
