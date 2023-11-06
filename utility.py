@@ -133,6 +133,7 @@ class Datasets():
         with open(os.path.join(self.path, self.name, 'bundle_item' + self.file_type), 'r') as f:
             b_i_pairs = list(map(lambda s: tuple(int(i) for i in s[:-1].split(self.sep))[:2], f.readlines())) # don't get timestamp
 
+        print('bi_pairs:', len(b_i_pairs))
         indice = np.array(b_i_pairs, dtype=np.int32)
         values = np.ones(len(b_i_pairs), dtype=np.float32)
         b_i_graph = sp.coo_matrix(
@@ -147,6 +148,7 @@ class Datasets():
         with open(os.path.join(self.path, self.name, 'user_item' + self.file_type), 'r') as f:
             u_i_pairs = list(map(lambda s: tuple(int(i) for i in s[:-1].split(self.sep))[:2], f.readlines()))
 
+        print('ui_pairs:', len(u_i_pairs))
         indice = np.array(u_i_pairs, dtype=np.int32)
         values = np.ones(len(u_i_pairs), dtype=np.float32)
         u_i_graph = sp.coo_matrix( 
@@ -161,6 +163,7 @@ class Datasets():
         with open(os.path.join(self.path, self.name, 'user_bundle_{}'.format(task) + self.file_type), 'r') as f:
             u_b_pairs = list(map(lambda s: tuple(int(i) for i in s[:-1].split(self.sep))[:2], f.readlines()))
 
+        print('ub_pairs:', task, len(u_b_pairs))
         indice = np.array(u_b_pairs, dtype=np.int32)
         values = np.ones(len(u_b_pairs), dtype=np.float32)
         u_b_graph = sp.coo_matrix(
