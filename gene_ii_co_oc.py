@@ -7,9 +7,9 @@ from sklearn.preprocessing import normalize
 from tqdm import tqdm
 
 
-def get_graph(path, x, y):
+def get_graph(path, x, y, sep):
     with open(os.path.join(path), 'r') as f:
-        b_i_pairs = list(map(lambda s: tuple(int(i) for i in s[:-1].split('\t')), f.readlines()))
+        b_i_pairs = list(map(lambda s: tuple(int(i) for i in s[:-1].split(sep)), f.readlines()))
 
     indice = np.array(b_i_pairs, dtype=np.int32)
     values = np.ones(len(b_i_pairs), dtype=np.float32)
@@ -53,9 +53,9 @@ def get_cmd():
     args = parser.parse_args()
     return args
 
-def get_stat(path):
+def get_stat(path, sep):
     with open(path, 'r') as f:
-        a, b, c = f.readline().split('\t')
+        a, b, c = f.readline().split(sep)
     return int(a), int(b), int(c)
 
 
@@ -64,15 +64,20 @@ if __name__ == '__main__':
     paras = get_cmd().__dict__
     dataset_name = paras["dataset"]
 
-    users, bundles, items = get_stat(f'datasets/{dataset_name}/{dataset_name}_data_size.txt')
+    if dataset_name in ['Youshu', 'iFashion', 'Netease']:
+        sep = '\t'
+    else:
+        sep = ','
+
+    users, bundles, items = get_stat(f'datasets/{dataset_name}/{dataset_name}_data_size.txt', sep=sep)
     dir = f'datasets/{dataset_name}'
     path = [dir + '/user_bundle_train.txt',
             dir + '/user_item.txt',
             dir + '/bundle_item.txt']
     
-    raw_graph = [get_graph(path[0], users, bundles),
-                 get_graph(path[1], users, items),
-                 get_graph(path[2], bundles, items)]
+    raw_graph = [get_graph(path[0], users, bundles, sep),
+                 get_graph(path[1], users, items, sep),
+                 get_graph(path[2], bundles, items, sep)]
 
     ub, ui, bi = raw_graph
 

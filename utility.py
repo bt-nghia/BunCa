@@ -82,6 +82,7 @@ class Datasets():
         self.name = conf['dataset']
         batch_size_train = conf['batch_size_train']
         batch_size_test = conf['batch_size_test']
+        self.sep = conf['sep']
 
         self.num_users, self.num_bundles, self.num_items = self.get_data_size()
 
@@ -129,7 +130,7 @@ class Datasets():
 
     def get_bi(self):
         with open(os.path.join(self.path, self.name, 'bundle_item.txt'), 'r') as f:
-            b_i_pairs = list(map(lambda s: tuple(int(i) for i in s[:-1].split('\t')), f.readlines()))
+            b_i_pairs = list(map(lambda s: tuple(int(i) for i in s[:-1].split(self.sep)), f.readlines()))
 
         indice = np.array(b_i_pairs, dtype=np.int32)
         values = np.ones(len(b_i_pairs), dtype=np.float32)
@@ -143,7 +144,7 @@ class Datasets():
 
     def get_ui(self):
         with open(os.path.join(self.path, self.name, 'user_item.txt'), 'r') as f:
-            u_i_pairs = list(map(lambda s: tuple(int(i) for i in s[:-1].split('\t')), f.readlines()))
+            u_i_pairs = list(map(lambda s: tuple(int(i) for i in s[:-1].split(self.sep)), f.readlines()))
 
         indice = np.array(u_i_pairs, dtype=np.int32)
         values = np.ones(len(u_i_pairs), dtype=np.float32)
@@ -157,7 +158,7 @@ class Datasets():
 
     def get_ub(self, task):
         with open(os.path.join(self.path, self.name, 'user_bundle_{}.txt'.format(task)), 'r') as f:
-            u_b_pairs = list(map(lambda s: tuple(int(i) for i in s[:-1].split('\t')), f.readlines()))
+            u_b_pairs = list(map(lambda s: tuple(int(i) for i in s[:-1].split(self.sep)), f.readlines()))
 
         indice = np.array(u_b_pairs, dtype=np.int32)
         values = np.ones(len(u_b_pairs), dtype=np.float32)
