@@ -105,8 +105,8 @@ class CrossCBR(nn.Module):
         del temp
 
         # ii-asym matrix
-        n_ibi = load_sp_mat("datasets/Youshu/n_neigh_ibi.npz").tocoo()
-        n_iui = load_sp_mat("datasets/Youshu/n_neigh_iui.npz").tocoo()
+        n_ibi = load_sp_mat("datasets/{}/n_neigh_ibi.npz".format(conf['dataset'])).tocoo()
+        n_iui = load_sp_mat("datasets/{}/n_neigh_iui.npz".format(conf['dataset'])).tocoo()
         self.sw = conf["sw"]
         self.nw = conf["nw"]
 
