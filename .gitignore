@@ -1,6 +1,6 @@
 *.o
 *.dSYM
-*.csv
+# *.csv
 *.out
 *.jpg
 *.pyc
@@ -30,7 +30,7 @@ Thumbs.db
 *.nfs*
 __pycache__
 
-datasets
+# datasets
 # datasets*
 # datasets/*
 checkpoints
