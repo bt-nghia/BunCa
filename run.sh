@@ -32,3 +32,7 @@
 python gene_ii_co_oc.py -d clothing
 python preProcess.py -d clothing
 python train.py -d clothing
+
+python gene_ii_co_oc.py -d food
+python preProcess.py -d food
+python train.py -d food -w3 0.8 -w4 0.2

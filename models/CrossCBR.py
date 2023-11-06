@@ -321,7 +321,8 @@ class CrossCBR(nn.Module):
         # IL_items_feature2 = self.n_iui @ IL_items_feature2 * self.nw + IL_items_feature2 * self.sw
         BIL_users_feature = self.get_IL_user_rep(IL_items_feature2, test)
 
-        # w3: 0.2, w4: 0.8
+        # w3: 0.1, w4: 0.9
+        # with amazon w3 0.8, w4 0.2
         fuse_users_feature = IL_users_feature * self.w3 + BIL_users_feature * self.w4
         fuse_bundles_feature = IL_bundles_feature * self.w3 + BIL_bundles_feature * self.w4
 
