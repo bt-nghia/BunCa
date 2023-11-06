@@ -83,6 +83,7 @@ class Datasets():
         batch_size_train = conf['batch_size_train']
         batch_size_test = conf['batch_size_test']
         self.sep = conf['sep']
+        self.file_type = conf['file_type']
 
         self.num_users, self.num_bundles, self.num_items = self.get_data_size()
 
@@ -129,8 +130,8 @@ class Datasets():
 
 
     def get_bi(self):
-        with open(os.path.join(self.path, self.name, 'bundle_item.txt'), 'r') as f:
-            b_i_pairs = list(map(lambda s: tuple(int(i) for i in s[:-1].split(self.sep)), f.readlines()))
+        with open(os.path.join(self.path, self.name, 'bundle_item' + self.file_type), 'r') as f:
+            b_i_pairs = list(map(lambda s: tuple(int(i) for i in s[:-1].split(self.sep))[:2], f.readlines())) # don't get timestamp
 
         indice = np.array(b_i_pairs, dtype=np.int32)
         values = np.ones(len(b_i_pairs), dtype=np.float32)
@@ -143,8 +144,8 @@ class Datasets():
 
 
     def get_ui(self):
-        with open(os.path.join(self.path, self.name, 'user_item.txt'), 'r') as f:
-            u_i_pairs = list(map(lambda s: tuple(int(i) for i in s[:-1].split(self.sep)), f.readlines()))
+        with open(os.path.join(self.path, self.name, 'user_item' + self.file_type), 'r') as f:
+            u_i_pairs = list(map(lambda s: tuple(int(i) for i in s[:-1].split(self.sep))[:2], f.readlines()))
 
         indice = np.array(u_i_pairs, dtype=np.int32)
         values = np.ones(len(u_i_pairs), dtype=np.float32)
@@ -157,8 +158,8 @@ class Datasets():
 
 
     def get_ub(self, task):
-        with open(os.path.join(self.path, self.name, 'user_bundle_{}.txt'.format(task)), 'r') as f:
-            u_b_pairs = list(map(lambda s: tuple(int(i) for i in s[:-1].split(self.sep)), f.readlines()))
+        with open(os.path.join(self.path, self.name, 'user_bundle_{}'.format(task) + self.file_type), 'r') as f:
+            u_b_pairs = list(map(lambda s: tuple(int(i) for i in s[:-1].split(self.sep))[:2], f.readlines()))
 
         indice = np.array(u_b_pairs, dtype=np.int32)
         values = np.ones(len(u_b_pairs), dtype=np.float32)

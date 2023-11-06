@@ -30,7 +30,7 @@ Youshu:
   UI_coefs: [1, 1]
   BI_coefs: [1, 1]
   sep: "\t"
-
+  file_type: ".txt"
 
 NetEase:
   data_path: './datasets'
@@ -56,6 +56,8 @@ NetEase:
   epochs: 50
   test_interval: 5
   sep: "\t"
+  file_type: ".txt"
+
 
 
 iFashion:
@@ -82,8 +84,9 @@ iFashion:
   epochs: 50
   test_interval: 5 
   sep: "\t"
+  file_type: ".txt"
 
-
+#-------------------------------- amazon datasets --------------------------------
 food:
   data_path: './datasets'
   batch_size_train: 2048 # the batch size for training
@@ -116,6 +119,7 @@ food:
   UI_coefs: [1, 1]
   BI_coefs: [1, 1]
   sep: ","
+  file_type: ".csv"
 
 
 electronic:
@@ -150,6 +154,7 @@ electronic:
   UI_coefs: [1, 1]
   BI_coefs: [1, 1]
   sep: ","
+  file_type: ".csv"
 
 
 clothing:
@@ -184,3 +189,4 @@ clothing:
   UI_coefs: [1, 1]
   BI_coefs: [1, 1]
   sep: ","
+  file_type: ".csv"

@@ -9,8 +9,8 @@ from tqdm import tqdm
 
 def get_graph(path, x, y, sep):
     with open(os.path.join(path), 'r') as f:
-        b_i_pairs = list(map(lambda s: tuple(int(i) for i in s[:-1].split(sep)), f.readlines()))
-
+        b_i_pairs = list(map(lambda s: tuple(int(i) for i in s[:-1].split(sep))[:2], f.readlines()))
+    
     indice = np.array(b_i_pairs, dtype=np.int32)
     values = np.ones(len(b_i_pairs), dtype=np.float32)
     b_i_graph = sp.coo_matrix(
@@ -66,14 +66,16 @@ if __name__ == '__main__':
 
     if dataset_name in ['Youshu', 'iFashion', 'Netease']:
         sep = '\t'
+        file_type = '.txt'
     else:
         sep = ','
+        file_type = '.csv'
 
-    users, bundles, items = get_stat(f'datasets/{dataset_name}/{dataset_name}_data_size.txt', sep=sep)
+    users, bundles, items = get_stat(f'datasets/{dataset_name}/{dataset_name}_data_size.txt', sep='\t')
     dir = f'datasets/{dataset_name}'
-    path = [dir + '/user_bundle_train.txt',
-            dir + '/user_item.txt',
-            dir + '/bundle_item.txt']
+    path = [dir + '/user_bundle_train' + file_type,
+            dir + '/user_item' + file_type,
+            dir + '/bundle_item' + file_type]
     
     raw_graph = [get_graph(path[0], users, bundles, sep),
                  get_graph(path[1], users, items, sep),
