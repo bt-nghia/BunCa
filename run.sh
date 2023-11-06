@@ -18,13 +18,17 @@
 # python train.py -sw 0.2 -nw 0.8
 # python train.py -sw 0.1 -nw 0.9
 
-# try this instead
-python train.py -sw 1 -nw 0.9
-python train.py -sw 1 -nw 0.8
-python train.py -sw 1 -nw 0.7
-python train.py -sw 1 -nw 0.6
-python train.py -sw 1 -nw 0.5
-python train.py -sw 1 -nw 0.4
-python train.py -sw 1 -nw 0.3
-python train.py -sw 1 -nw 0.2
-python train.py -sw 1 -nw 0.1
+# # try this instead
+# python train.py -sw 1 -nw 0.9
+# python train.py -sw 1 -nw 0.8
+# python train.py -sw 1 -nw 0.7
+# python train.py -sw 1 -nw 0.6
+# python train.py -sw 1 -nw 0.5
+# python train.py -sw 1 -nw 0.4
+# python train.py -sw 1 -nw 0.3
+# python train.py -sw 1 -nw 0.2
+# python train.py -sw 1 -nw 0.1
+
+python gene_ii_co_oc.py -d clothing
+python preProcess.py -d clothing
+python train.py -d clothing
