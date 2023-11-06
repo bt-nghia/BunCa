@@ -124,8 +124,8 @@ food:
 
 electronic:
   data_path: './datasets'
-  batch_size_train: 2048 # the batch size for training
-  batch_size_test: 2048 # the batch size for testing
+  batch_size_train: 128 # the batch size for training
+  batch_size_test: 128 # the batch size for testing
   topk: [10, 20, 40, 80] # the topks metrics for evaluation
   neg_num: 1 # number of negatives used for BPR loss. All the experiments use 1.
   
@@ -159,8 +159,8 @@ electronic:
 
 clothing:
   data_path: './datasets'
-  batch_size_train: 2048 # the batch size for training
-  batch_size_test: 2048 # the batch size for testing
+  batch_size_train: 128 # the batch size for training
+  batch_size_test: 128 # the batch size for testing
   topk: [10, 20, 40, 80] # the topks metrics for evaluation
   neg_num: 1 # number of negatives used for BPR loss. All the experiments use 1.
   
