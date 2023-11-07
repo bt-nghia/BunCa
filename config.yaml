@@ -91,7 +91,7 @@ food1:
   data_path: './datasets'
   batch_size_train: 128 # the batch size for training
   batch_size_test: 128 # the batch size for testing
-  topk: [5, 10, 20, 40, 80] # the topks metrics for evaluation
+  topk: [1, 3, 5, 10, 20] # the topks metrics for evaluation
   neg_num: 1 # number of negatives used for BPR loss. All the experiments use 1.
   
   # search hyperparameters
@@ -126,7 +126,7 @@ electronic1:
   data_path: './datasets'
   batch_size_train: 128 # the batch size for training
   batch_size_test: 128 # the batch size for testing
-  topk: [10, 20, 40, 80] # the topks metrics for evaluation
+  topk: [1, 3, 5, 10, 20] # the topks metrics for evaluation
   neg_num: 1 # number of negatives used for BPR loss. All the experiments use 1.
   
   # search hyperparameters
@@ -161,7 +161,7 @@ clothing1:
   data_path: './datasets'
   batch_size_train: 128 # the batch size for training
   batch_size_test: 128 # the batch size for testing
-  topk: [10, 20, 40, 80] # the topks metrics for evaluation
+  topk: [1, 3, 5, 10, 20] # the topks metrics for evaluation
   neg_num: 1 # number of negatives used for BPR loss. All the experiments use 1.
   
   # search hyperparameters
@@ -197,7 +197,7 @@ food:
   data_path: './datasets'
   batch_size_train: 128 # the batch size for training
   batch_size_test: 128 # the batch size for testing
-  topk: [5, 10, 20, 40, 80] # the topks metrics for evaluation
+  topk: [1, 3, 5, 10, 20] # the topks metrics for evaluation
   neg_num: 1 # number of negatives used for BPR loss. All the experiments use 1.
   
   # search hyperparameters
@@ -232,7 +232,7 @@ electronic:
   data_path: './datasets'
   batch_size_train: 128 # the batch size for training
   batch_size_test: 128 # the batch size for testing
-  topk: [10, 20, 40, 80] # the topks metrics for evaluation
+  topk: [1, 3, 5, 10, 20] # the topks metrics for evaluation
   neg_num: 1 # number of negatives used for BPR loss. All the experiments use 1.
   
   # search hyperparameters
@@ -267,7 +267,7 @@ clothing:
   data_path: './datasets'
   batch_size_train: 128 # the batch size for training
   batch_size_test: 128 # the batch size for testing
-  topk: [10, 20, 40, 80] # the topks metrics for evaluation
+  topk: [1, 3, 5, 10, 20] # the topks metrics for evaluation
   neg_num: 1 # number of negatives used for BPR loss. All the experiments use 1.
   
   # search hyperparameters
