@@ -224,7 +224,7 @@ food:
   UB_coefs: [1, 1]
   UI_coefs: [1, 1]
   BI_coefs: [1, 1]
-  sep: "\t"
+  sep: ","
   file_type: ".csv"
 
 
@@ -259,7 +259,7 @@ electronic:
   UB_coefs: [1, 1]
   UI_coefs: [1, 1]
   BI_coefs: [1, 1]
-  sep: "\t"
+  sep: ","
   file_type: ".csv"
 
 
@@ -294,5 +294,5 @@ clothing:
   UB_coefs: [1, 1]
   UI_coefs: [1, 1]
   BI_coefs: [1, 1]
-  sep: "\t"
+  sep: ","
   file_type: ".csv"
