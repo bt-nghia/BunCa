@@ -111,7 +111,7 @@ food1:
   c_lambdas: [0.04] # the contrastive loss weight: lambda_1
   c_temps: [0.25] # the temperature in the contrastive loss: tau
 
-  epochs: 50 # number of epochs to train
+  epochs: 30 # number of epochs to train
   test_interval: 1 # by how many epochs to run the validation and testing.
   UI_layers: [0.7, 0.3]
   seed: 2023
@@ -146,7 +146,7 @@ electronic1:
   c_lambdas: [0.04] # the contrastive loss weight: lambda_1
   c_temps: [0.25] # the temperature in the contrastive loss: tau
 
-  epochs: 50 # number of epochs to train
+  epochs: 30 # number of epochs to train
   test_interval: 1 # by how many epochs to run the validation and testing.
   UI_layers: [0.7, 0.3]
   seed: 2023
@@ -181,7 +181,7 @@ clothing1:
   c_lambdas: [0.04] # the contrastive loss weight: lambda_1
   c_temps: [0.25] # the temperature in the contrastive loss: tau
 
-  epochs: 50 # number of epochs to train
+  epochs: 30 # number of epochs to train
   test_interval: 1 # by how many epochs to run the validation and testing.
   UI_layers: [0.7, 0.3]
   seed: 2023
@@ -217,7 +217,7 @@ food:
   c_lambdas: [0.04] # the contrastive loss weight: lambda_1
   c_temps: [0.25] # the temperature in the contrastive loss: tau
 
-  epochs: 50 # number of epochs to train
+  epochs: 30 # number of epochs to train
   test_interval: 1 # by how many epochs to run the validation and testing.
   UI_layers: [0.7, 0.3]
   seed: 2023
@@ -252,7 +252,7 @@ electronic:
   c_lambdas: [0.04] # the contrastive loss weight: lambda_1
   c_temps: [0.25] # the temperature in the contrastive loss: tau
 
-  epochs: 50 # number of epochs to train
+  epochs: 30 # number of epochs to train
   test_interval: 1 # by how many epochs to run the validation and testing.
   UI_layers: [0.7, 0.3]
   seed: 2023
@@ -287,7 +287,7 @@ clothing:
   c_lambdas: [0.04] # the contrastive loss weight: lambda_1
   c_temps: [0.25] # the temperature in the contrastive loss: tau
 
-  epochs: 50 # number of epochs to train
+  epochs: 30 # number of epochs to train
   test_interval: 1 # by how many epochs to run the validation and testing.
   UI_layers: [0.7, 0.3]
   seed: 2023
