@@ -105,22 +105,12 @@ class CrossCBR(nn.Module):
         del temp
 
         # ii-asym matrix
-        # n_ibi = load_sp_mat("datasets/{}/n_neigh_ibi.npz".format(conf["dataset"])).tocoo()
-        # n_iui = load_sp_mat("datasets/{}/n_neigh_iui.npz".format(conf["dataset"])).tocoo()
         self.sw = conf["sw"]
         self.nw = conf["nw"]
-
-        # self.ibi_edge_index = torch.tensor([list(n_ibi.row), list(n_ibi.col)], dtype=torch.int64).to(self.device)
-        # self.iui_edge_index = torch.tensor([list(n_iui.row), list(n_iui.col)], dtype=torch.int64).to(self.device)
         self.ibi_edge_index = torch.tensor(np.load("datasets/{}/n_neigh_ibi.npy".format(conf["dataset"]), allow_pickle=True)).to(self.device)
         self.iui_edge_index = torch.tensor(np.load("datasets/{}/n_neigh_iui.npy".format(conf["dataset"]), allow_pickle=True)).to(self.device)
-        # print(self.iui_edge)
-        # self.ibi_params = nn.Parameter(torch.rand(n_ibi.getnnz(), )).to(self.device)
-        # self.iui_params = nn.Parameter(torch.rand(n_iui.getnnz(), )).to(self.device)
-        self.iui_gat_conv = GatConv(in_dim=64, out_dim=64, n_layer=1, dropout=0.1, heads=2, concat=False, self_loop=False)
-        self.ibi_gat_conv = GatConv(in_dim=64, out_dim=64, n_layer=1, dropout=0.1, heads=2, concat=False, self_loop=False)
-
-        # del n_iui, n_ibi
+        self.iui_gat_conv = Amatrix(in_dim=64, out_dim=64, n_layer=1, dropout=0.1, heads=2, concat=False, self_loop=False)
+        self.ibi_gat_conv = Amatrix(in_dim=64, out_dim=64, n_layer=1, dropout=0.1, heads=2, concat=False, self_loop=False)
 
 
     def load_ii_sp_matrix(self, edge_index, vals, shape):
@@ -339,25 +329,6 @@ class CrossCBR(nn.Module):
         return users_feature, bundles_feature
 
 
-    def cal_c_loss(self, pos, aug):
-        # pos: [batch_size, :, emb_size]
-        # aug: [batch_size, :, emb_size]
-        pos = pos[:, 0, :]
-        aug = aug[:, 0, :]
-
-        pos = F.normalize(pos, p=2, dim=1)
-        aug = F.normalize(aug, p=2, dim=1)
-        pos_score = torch.sum(pos * aug, dim=1) # [batch_size]
-        ttl_score = torch.matmul(pos, aug.permute(1, 0)) # [batch_size, batch_size]
-
-        pos_score = torch.exp(pos_score / self.c_temp) # [batch_size]
-        ttl_score = torch.sum(torch.exp(ttl_score / self.c_temp), axis=1) # [batch_size]
-
-        c_loss = - torch.mean(torch.log(pos_score / ttl_score))
-
-        return c_loss
-
-
     def cal_loss(self, users_feature, bundles_feature):
         # IL: item_level, BL: bundle_level
         # [bs, 1, emb_size]
@@ -367,16 +338,7 @@ class CrossCBR(nn.Module):
         # [bs, 1+neg_num]
         pred = torch.sum(IL_users_feature * IL_bundles_feature, 2) + torch.sum(BL_users_feature * BL_bundles_feature, 2)
         bpr_loss = cal_bpr_loss(pred)
-
-        # cl is abbr. of "contrastive loss"
-        u_cross_view_cl = self.cal_c_loss(IL_users_feature, BL_users_feature)
-        b_cross_view_cl = self.cal_c_loss(IL_bundles_feature, BL_bundles_feature)
-
-        c_losses = [u_cross_view_cl, b_cross_view_cl]
-
-        c_loss = sum(c_losses) / len(c_losses)
-
-        return bpr_loss, c_loss
+        return bpr_loss, torch.zeros(1).to(self.device)[0]
 
 
     def forward(self, batch, ED_drop=False):
@@ -408,9 +370,9 @@ class CrossCBR(nn.Module):
         return scores
     
 
-class GatConv(nn.Module):
+class Amatrix(nn.Module):
     def __init__(self, in_dim, out_dim, n_layer=1, dropout=0.0, heads=2, concat=False, self_loop=True):
-        super(GatConv, self).__init__()
+        super(Amatrix, self).__init__()
         self.num_layer = n_layer
         self.dropout = dropout
         self.in_dim = in_dim
