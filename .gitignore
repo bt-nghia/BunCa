@@ -30,7 +30,7 @@ Thumbs.db
 *.nfs*
 __pycache__
 
-datasets
+# datasets
 # datasets*
 # datasets/*
 checkpoints
