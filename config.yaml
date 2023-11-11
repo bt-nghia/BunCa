@@ -22,6 +22,8 @@ Youshu:
   c_lambdas: [0.04] # the contrastive loss weight: lambda_1
   c_temps: [0.25] # the temperature in the contrastive loss: tau
 
+  self_loop: False
+
   epochs: 100 # number of epochs to train
   test_interval: 1 # by how many epochs to run the validation and testing.
   UI_layers: [0.7, 0.3]
@@ -51,6 +53,8 @@ NetEase:
   bundle_agg_ratios: [0.1]
   l2_regs: [1.0e-4]
 
+  self_loop: False
+
   c_lambdas: [0.1]
   c_temps: [0.25]
 
@@ -79,6 +83,7 @@ iFashion:
   bundle_level_ratios: [0.2]
   bundle_agg_ratios: [0]
   l2_regs: [4.0e-5]
+  self_loop: False
 
   c_lambdas: [0.25]
   c_temps: [0.2]
@@ -105,6 +110,7 @@ food:
   item_level_ratios: [0.2]
   bundle_level_ratios: [0.2] 
   bundle_agg_ratios: [0.2] 
+  self_loop: False
 
   lrs: [1.0e-3] 
   l2_regs: [1.0e-4] 
@@ -137,6 +143,7 @@ electronic:
   item_level_ratios: [0.2]
   bundle_level_ratios: [0.2] 
   bundle_agg_ratios: [0.2] 
+  self_loop: False
 
   lrs: [1.0e-3] 
   l2_regs: [1.0e-4] 
@@ -170,6 +177,7 @@ clothing:
   item_level_ratios: [0.2]
   bundle_level_ratios: [0.2] 
   bundle_agg_ratios: [0.2] 
+  self_loop: False
 
   lrs: [1.0e-3] 
   l2_regs: [1.0e-4] 
