@@ -19,6 +19,8 @@ def get_cmd():
 if __name__=='__main__':
     paras = get_cmd().__dict__
     dataset_name = paras["dataset"]
+    b_fil = paras["bundlefil"]
+    u_fil = paras["userfil"]
 
     path_iui = f"datasets/{dataset_name}/iui_cooc.npz"
     path_ibi = f"datasets/{dataset_name}/ibi_cooc.npz"
@@ -61,8 +63,8 @@ if __name__=='__main__':
 
     # --------------------- filter out -----------------------
     n_items = ibi.shape[0]
-    ibi_filter = ibi >= 4
-    iui_filter = iui >= 4
+    ibi_filter = ibi >= b_fil
+    iui_filter = iui >= u_fil
 
     # mask all diag weight
     diag_filter_i = sp.coo_matrix(
