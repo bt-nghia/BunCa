@@ -34,6 +34,7 @@ Youshu:
   sep: "\t"
   file_type: ".txt"
   topk_valid: 20
+  nhead: 2
 
 NetEase:
   data_path: './datasets'
@@ -63,7 +64,7 @@ NetEase:
   sep: "\t"
   file_type: ".txt"
   topk_valid: 20
-
+  nhead: 2
 
 
 iFashion:
@@ -93,6 +94,8 @@ iFashion:
   sep: "\t"
   topk_valid: 20
   file_type: ".txt"
+  nhead: 2
+
 
 # ------------------- hai amazon datasets ---------------------
 food:
@@ -127,6 +130,8 @@ food:
   sep: "\t"
   file_type: ".txt"
   topk_valid: 3
+  nhead: 1
+
 
 electronic:
   data_path: './datasets'
@@ -160,6 +165,7 @@ electronic:
   sep: "\t"
   topk_valid: 3
   file_type: ".txt"
+  nhead: 2
 
 
 clothing:
@@ -194,3 +200,4 @@ clothing:
   sep: "\t"
   file_type: ".txt"
   topk_valid: 3
+  nhead: 2

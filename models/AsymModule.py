@@ -25,6 +25,7 @@ class AsymMatrix(MessagePassing):
 
     '''
     The Asymmatrix inspired by GAT and GATv2 convolution 
+    by remove linear layer just keep edge's weight due to the large data such as NetEase
     '''
 
     _alpha: OptTensor
@@ -55,12 +56,6 @@ class AsymMatrix(MessagePassing):
         self.edge_dim = edge_dim
         self.fill_value = fill_value
 
-        self.lin_l = Linear(in_channels, heads * out_channels, bias=bias,
-                            weight_initializer='glorot')
-        
-        self.lin_r = Linear(in_channels, heads * out_channels, bias=bias, 
-                            weight_initializer='glorot')
-
         self.att = Parameter(torch.Tensor(1, heads, out_channels))
 
         if bias and concat:
@@ -76,8 +71,6 @@ class AsymMatrix(MessagePassing):
 
     def reset_parameters(self):
         super().reset_parameters()
-        self.lin_l.reset_parameters()
-        self.lin_r.reset_parameters()
         glorot(self.att)
         zeros(self.bias)
 
@@ -85,13 +78,12 @@ class AsymMatrix(MessagePassing):
                 edge_attr: OptTensor = None,
                 return_attention_weights: bool = None):
         H, C = self.heads, self.out_channels
-
         x_l: OptTensor = None
         x_r: OptTensor = None
         if isinstance(x, Tensor):
             assert x.dim() == 2
-            x_l = self.lin_l(x).view(-1, H, C)
-            x_r = self.lin_r(x).view(-1, H, C)
+            x = x.expand(self.heads, x.shape[0], x.shape[1]).transpose(0,1)
+            x_l = x_r = x.view(-1, H, C)
 
         assert x_l is not None
         assert x_r is not None

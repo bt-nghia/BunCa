@@ -104,13 +104,14 @@ class CrossCBR(nn.Module):
         self.UI_coefs = torch.tensor(temp).unsqueeze(0).unsqueeze(-1).to(self.device)
         del temp
         self.a_self_loop = self.conf["self_loop"]
+        self.n_head = self.conf["nhead"]
         # ii-asym matrix
         self.sw = conf["sw"]
         self.nw = conf["nw"]
         self.ibi_edge_index = torch.tensor(np.load("datasets/{}/n_neigh_ibi.npy".format(conf["dataset"]), allow_pickle=True)).to(self.device)
         self.iui_edge_index = torch.tensor(np.load("datasets/{}/n_neigh_iui.npy".format(conf["dataset"]), allow_pickle=True)).to(self.device)
-        self.iui_gat_conv = Amatrix(in_dim=64, out_dim=64, n_layer=1, dropout=0.1, heads=2, concat=False, self_loop=self.a_self_loop)
-        self.ibi_gat_conv = Amatrix(in_dim=64, out_dim=64, n_layer=1, dropout=0.1, heads=2, concat=False, self_loop=self.a_self_loop)
+        self.iui_gat_conv = Amatrix(in_dim=64, out_dim=64, n_layer=1, dropout=0.1, heads=self.n_head, concat=False, self_loop=self.a_self_loop)
+        self.ibi_gat_conv = Amatrix(in_dim=64, out_dim=64, n_layer=1, dropout=0.1, heads=self.n_head, concat=False, self_loop=self.a_self_loop)
 
 
     def load_ii_sp_matrix(self, edge_index, vals, shape):
