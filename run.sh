@@ -5,8 +5,8 @@
 
 
 # Youshu
-python gene_ii_co_oc.py -d clothing
-python preProcess.py -d clothing
+python gene_ii_co_oc.py -d Youshu
+python preProcess.py -d Youshu
 python train.py -d Youshu
 
 # clothing
@@ -26,5 +26,5 @@ python train.py -d electronic -w3 0.9 -w4 0.1
 
 # NetEase
 !python gene_ii_co_oc.py -d NetEase
-!python preProcess.py -d NetEase -b 9 -u 8
+!python preProcess.py -d NetEase -b 10 -u 9
 !python train.py -d NetEase

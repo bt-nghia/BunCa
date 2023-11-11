@@ -24,8 +24,9 @@ from torch_geometric.utils.sparse import set_sparse_value
 class AsymMatrix(MessagePassing):
 
     '''
-    The Asymmatrix inspired by GAT and GATv2 convolution 
-    by remove linear layer just keep edge's weight due to the large data such as NetEase
+    The Asymmatrix is inspired by GAT and GATv2 convolution 
+    by remove linear layer just keep edge's weight due to 
+    the large dataset such as NetEase
     '''
 
     _alpha: OptTensor
