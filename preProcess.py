@@ -3,12 +3,16 @@ import numpy as np
 import scipy.sparse as sp
 from gene_ii_co_oc import load_sp_mat
 from sklearn.preprocessing import normalize
+import torch
 
 
 def get_cmd():
     parser = argparse.ArgumentParser()
     # experimental settings
     parser.add_argument("-d", "--dataset", default="Youshu", type=str, help="dataset to train")
+    parser.add_argument("-u", "--userfil", default=4, type=int, help="iui filter")
+    parser.add_argument("-b", "--bundlefil", default=4, type=int, help="ibi filter")
+
     args = parser.parse_args()
     return args
 
@@ -18,8 +22,8 @@ if __name__=='__main__':
 
     path_iui = f"datasets/{dataset_name}/iui_cooc.npz"
     path_ibi = f"datasets/{dataset_name}/ibi_cooc.npz"
-    save_path_iui = f"datasets/{dataset_name}/n_neigh_iui.npz"
-    save_path_ibi = f"datasets/{dataset_name}/n_neigh_ibi.npz"
+    save_path_iui = f"datasets/{dataset_name}/n_neigh_iui"
+    save_path_ibi = f"datasets/{dataset_name}/n_neigh_ibi"
 
     iui = load_sp_mat(path_iui)
     print(iui.getnnz())
@@ -80,10 +84,17 @@ if __name__=='__main__':
 
     # n_ibi = normalize(neighbor_ibi, norm='l1', axis=1)
     # n_iui = normalize(neighbor_iui, norm='l1', axis=1)
-    n_ibi = neighbor_ibi
-    n_iui = neighbor_iui
+    # n_ibi = neighbor_ibi
+    # n_iui = neighbor_iui
+    n_ibi = neighbor_ibi.tocoo()
+    n_iui = neighbor_iui.tocoo()
 
+    ibi_edge_index = torch.tensor([list(n_ibi.row), list(n_ibi.col)], dtype=torch.int64)
+    iui_edge_index = torch.tensor([list(n_iui.row), list(n_iui.col)], dtype=torch.int64)
 
     # --------------------- saving --------------------------
-    sp.save_npz(save_path_ibi, n_ibi)
-    sp.save_npz(save_path_iui, n_iui)
+    # sp.save_npz(save_path_ibi, n_ibi)
+    # sp.save_npz(save_path_iui, n_iui)
+
+    np.save(save_path_ibi, ibi_edge_index)
+    np.save(save_path_iui, iui_edge_index)

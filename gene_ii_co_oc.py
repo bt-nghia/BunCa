@@ -9,8 +9,8 @@ from tqdm import tqdm
 
 def get_graph(path, x, y, sep):
     with open(os.path.join(path), 'r') as f:
-        b_i_pairs = list(map(lambda s: tuple(int(i) for i in s[:-1].split(sep))[:2], f.readlines()))
-    
+        b_i_pairs = list(map(lambda s: tuple(int(i) for i in s[:-1].split(sep)), f.readlines()))
+
     indice = np.array(b_i_pairs, dtype=np.int32)
     values = np.ones(len(b_i_pairs), dtype=np.float32)
     b_i_graph = sp.coo_matrix(
@@ -35,14 +35,14 @@ def gen_ii_asym(ix_mat, threshold=0):
     mat: ui or bi
     '''
     ii_co = ix_mat @ ix_mat.T
-    i_count = ix_mat.sum(axis=1)
-    i_count += (i_count == 0) # mask all zero with 1
+    # i_count = ix_mat.sum(axis=1)
+    # i_count += (i_count == 0) # mask all zero with 1
     # norm_ii = normalize(ii_asym, norm='l1', axis=1)
     # return norm_ii
     # return ii_asym
     mask = ii_co > threshold
     ii_co = ii_co.multiply(mask)
-    ii_asym = ii_co / i_count
+    # ii_asym = ii_co / i_count
     # normalize by row -> asym matrix
     return ii_co
 
@@ -64,18 +64,13 @@ if __name__ == '__main__':
     paras = get_cmd().__dict__
     dataset_name = paras["dataset"]
 
-    if dataset_name in ['Youshu', 'iFashion', 'Netease', 'food1', 'electronic1', 'clothing1', 'clothing', 'electronic', 'food']:
-        sep = '\t'
-        file_type = '.txt'
-    else:
-        sep = ','
-        file_type = '.csv'
+    sep = '\t'
 
-    users, bundles, items = get_stat(f'datasets/{dataset_name}/{dataset_name}_data_size.txt', sep='\t')
+    users, bundles, items = get_stat(f'datasets/{dataset_name}/{dataset_name}_data_size.txt', sep=sep)
     dir = f'datasets/{dataset_name}'
-    path = [dir + '/user_bundle_train' + file_type,
-            dir + '/user_item' + file_type,
-            dir + '/bundle_item' + file_type]
+    path = [dir + '/user_bundle_train.txt',
+            dir + '/user_item.txt',
+            dir + '/bundle_item.txt']
     
     raw_graph = [get_graph(path[0], users, bundles, sep),
                  get_graph(path[1], users, items, sep),

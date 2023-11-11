@@ -31,6 +31,7 @@ Youshu:
   BI_coefs: [1, 1]
   sep: "\t"
   file_type: ".txt"
+  topk_valid: 20
 
 NetEase:
   data_path: './datasets'
@@ -57,6 +58,7 @@ NetEase:
   test_interval: 5
   sep: "\t"
   file_type: ".txt"
+  topk_valid: 20
 
 
 
@@ -84,6 +86,7 @@ iFashion:
   epochs: 50
   test_interval: 5 
   sep: "\t"
+  topk_valid: 20
   file_type: ".txt"
 
 # ------------------- hai amazon datasets ---------------------
@@ -117,7 +120,7 @@ food:
   BI_coefs: [1, 1]
   sep: "\t"
   file_type: ".txt"
-
+  topk_valid: 3
 
 electronic:
   data_path: './datasets'
@@ -148,6 +151,7 @@ electronic:
   UI_coefs: [1, 1]
   BI_coefs: [1, 1]
   sep: "\t"
+  topk_valid: 3
   file_type: ".txt"
 
 
@@ -181,3 +185,4 @@ clothing:
   BI_coefs: [1, 1]
   sep: "\t"
   file_type: ".txt"
+  topk_valid: 3

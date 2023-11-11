@@ -6,7 +6,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import scipy.sparse as sp 
 from gene_ii_co_oc import load_sp_mat
-from torch_geometric.nn import GATv2Conv, GATConv
+from models.AsymModule import AsymMatrix
 
 
 def cal_bpr_loss(pred):
@@ -105,20 +105,22 @@ class CrossCBR(nn.Module):
         del temp
 
         # ii-asym matrix
-        n_ibi = load_sp_mat("datasets/{}/n_neigh_ibi.npz".format(conf['dataset'])).tocoo()
-        n_iui = load_sp_mat("datasets/{}/n_neigh_iui.npz".format(conf['dataset'])).tocoo()
+        # n_ibi = load_sp_mat("datasets/{}/n_neigh_ibi.npz".format(conf["dataset"])).tocoo()
+        # n_iui = load_sp_mat("datasets/{}/n_neigh_iui.npz".format(conf["dataset"])).tocoo()
         self.sw = conf["sw"]
         self.nw = conf["nw"]
 
-        self.ibi_edge_index = torch.tensor([list(n_ibi.row), list(n_ibi.col)], dtype=torch.int64).to(self.device)
-        self.iui_edge_index = torch.tensor([list(n_iui.row), list(n_iui.col)], dtype=torch.int64).to(self.device)
+        # self.ibi_edge_index = torch.tensor([list(n_ibi.row), list(n_ibi.col)], dtype=torch.int64).to(self.device)
+        # self.iui_edge_index = torch.tensor([list(n_iui.row), list(n_iui.col)], dtype=torch.int64).to(self.device)
+        self.ibi_edge_index = torch.tensor(np.load("datasets/{}/n_neigh_ibi.npy".format(conf["dataset"]), allow_pickle=True)).to(self.device)
+        self.iui_edge_index = torch.tensor(np.load("datasets/{}/n_neigh_iui.npy".format(conf["dataset"]), allow_pickle=True)).to(self.device)
         # print(self.iui_edge)
         # self.ibi_params = nn.Parameter(torch.rand(n_ibi.getnnz(), )).to(self.device)
         # self.iui_params = nn.Parameter(torch.rand(n_iui.getnnz(), )).to(self.device)
         self.iui_gat_conv = GatConv(in_dim=64, out_dim=64, n_layer=1, dropout=0.1, heads=2, concat=False, self_loop=False)
         self.ibi_gat_conv = GatConv(in_dim=64, out_dim=64, n_layer=1, dropout=0.1, heads=2, concat=False, self_loop=False)
 
-        del n_iui, n_ibi
+        # del n_iui, n_ibi
 
 
     def load_ii_sp_matrix(self, edge_index, vals, shape):
@@ -321,8 +323,7 @@ class CrossCBR(nn.Module):
         # IL_items_feature2 = self.n_iui @ IL_items_feature2 * self.nw + IL_items_feature2 * self.sw
         BIL_users_feature = self.get_IL_user_rep(IL_items_feature2, test)
 
-        # w3: 0.1, w4: 0.9
-        # with amazon w3 0.8, w4 0.2
+        # w3: 0.2, w4: 0.8
         fuse_users_feature = IL_users_feature * self.w3 + BIL_users_feature * self.w4
         fuse_bundles_feature = IL_bundles_feature * self.w3 + BIL_bundles_feature * self.w4
 
@@ -417,7 +418,7 @@ class GatConv(nn.Module):
         self.heads = heads
         self.concat = concat
         self.self_loop = self_loop
-        self.convs = nn.ModuleList([GATv2Conv(in_channels=self.in_dim, 
+        self.convs = nn.ModuleList([AsymMatrix(in_channels=self.in_dim, 
                                               out_channels=self.out_dim, 
                                               dropout=self.dropout,
                                               heads=self.heads,
