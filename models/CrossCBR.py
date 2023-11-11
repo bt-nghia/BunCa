@@ -328,6 +328,25 @@ class CrossCBR(nn.Module):
         bundles_feature = [fuse_bundles_feature, BL_bundles_feature]
 
         return users_feature, bundles_feature
+    
+    
+    def cal_c_loss(self, pos, aug):
+        # pos: [batch_size, :, emb_size]
+        # aug: [batch_size, :, emb_size]
+        pos = pos[:, 0, :]
+        aug = aug[:, 0, :]
+
+        pos = F.normalize(pos, p=2, dim=1)
+        aug = F.normalize(aug, p=2, dim=1)
+        pos_score = torch.sum(pos * aug, dim=1) # [batch_size]
+        ttl_score = torch.matmul(pos, aug.permute(1, 0)) # [batch_size, batch_size]
+
+        pos_score = torch.exp(pos_score / self.c_temp) # [batch_size]
+        ttl_score = torch.sum(torch.exp(ttl_score / self.c_temp), axis=1) # [batch_size]
+
+        c_loss = - torch.mean(torch.log(pos_score / ttl_score))
+
+        return c_loss
 
 
     def cal_loss(self, users_feature, bundles_feature):
@@ -339,7 +358,15 @@ class CrossCBR(nn.Module):
         # [bs, 1+neg_num]
         pred = torch.sum(IL_users_feature * IL_bundles_feature, 2) + torch.sum(BL_users_feature * BL_bundles_feature, 2)
         bpr_loss = cal_bpr_loss(pred)
-        return bpr_loss, torch.zeros(1).to(self.device)[0]
+
+        u_cross_view_cl = self.cal_c_loss(IL_users_feature, BL_users_feature)
+        b_cross_view_cl = self.cal_c_loss(IL_bundles_feature, BL_bundles_feature)
+
+        c_losses = [u_cross_view_cl, b_cross_view_cl]
+
+        c_loss = sum(c_losses) / len(c_losses)
+
+        return bpr_loss, c_loss
 
 
     def forward(self, batch, ED_drop=False):

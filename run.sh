@@ -23,3 +23,8 @@ python train.py -d food -w3 0.9 -w4 0.1
 python gene_ii_co_oc.py -d electronic
 python preProcess.py -d electronic
 python train.py -d electronic -w3 0.9 -w4 0.1
+
+# NetEase
+!python gene_ii_co_oc.py -d NetEase
+!python preProcess.py -d NetEase -b 9 -u 8
+!python train.py -d NetEase

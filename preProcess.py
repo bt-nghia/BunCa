@@ -98,5 +98,8 @@ if __name__=='__main__':
     # sp.save_npz(save_path_ibi, n_ibi)
     # sp.save_npz(save_path_iui, n_iui)
 
+    print('ibi', ibi_edge_index.shape)
+    print('iui', iui_edge_index.shape)
+
     np.save(save_path_ibi, ibi_edge_index)
     np.save(save_path_iui, iui_edge_index)
