@@ -59,7 +59,7 @@ NetEase:
   c_lambdas: [0.1]
   c_temps: [0.25]
 
-  epochs: 50
+  epochs: 60
   test_interval: 5
   topk_valid: 20
   UI_layers: [0.7, 0.3]
@@ -70,7 +70,7 @@ NetEase:
   sep: "\t"
   file_type: ".txt"
   topk_valid: 20
-  nhead: 2
+  nhead: 1
 
 
 iFashion:
