@@ -70,7 +70,7 @@ NetEase:
   sep: "\t"
   file_type: ".txt"
   topk_valid: 20
-  nhead: 1
+  nhead: 3
 
 
 iFashion:
