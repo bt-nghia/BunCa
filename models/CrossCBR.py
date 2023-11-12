@@ -112,18 +112,6 @@ class CrossCBR(nn.Module):
         self.iui_edge_index = torch.tensor(np.load("datasets/{}/n_neigh_iui.npy".format(conf["dataset"]), allow_pickle=True)).to(self.device)
         self.iui_gat_conv = Amatrix(in_dim=64, out_dim=64, n_layer=1, dropout=0.1, heads=self.n_head, concat=False, self_loop=self.a_self_loop)
         self.ibi_gat_conv = Amatrix(in_dim=64, out_dim=64, n_layer=1, dropout=0.1, heads=self.n_head, concat=False, self_loop=self.a_self_loop)
-
-
-    def load_ii_sp_matrix(self, edge_index, vals, shape):
-        '''
-        vals: exp
-        -> normalize & log -> softmax
-        '''
-        ii = torch.sparse.FloatTensor(edge_index, vals, shape)
-        # print(ii)
-        # ii_sum = torch.sparse.sum(ii, dim=1)
-        # ii = torch.sparse.softmax(ii, dim=1)
-        return ii.to(self.device)
     
 
     def init_md_dropouts(self):
@@ -163,6 +151,7 @@ class CrossCBR(nn.Module):
 
         self.item_level_graph = to_tensor(laplace_transform(item_level_graph)).to(device)
         self.bi_propagate_graph = to_tensor(laplace_transform(bi_propagate_graph)).to(device)
+
 
     def get_item_level_graph_ori(self):
         ui_graph = self.ui_graph
@@ -207,6 +196,7 @@ class CrossCBR(nn.Module):
         bundle_size = bi_graph.sum(axis=1) + 1e-8
         bi_graph = sp.diags(1/bundle_size.A.ravel()) @ bi_graph
         self.bundle_agg_graph = to_tensor(bi_graph).to(device)
+
 
     def get_user_agg_graph(self):
         ui_graph = self.ui_graph
@@ -273,6 +263,7 @@ class CrossCBR(nn.Module):
 
         return IL_bundles_feature
     
+    
     def get_IL_user_rep(self, IL_items_feature, test):
         if test:
             IL_users_feature = torch.matmul(self.user_agg_graph_ori, IL_items_feature)
@@ -287,9 +278,6 @@ class CrossCBR(nn.Module):
 
 
     def propagate(self, test=False):
-
-        # iui_mat = self.load_ii_sp_matrix(self.iui_edge_index, self.iui_params, (self.num_items, self.num_items))
-        # ibi_mat = self.load_ii_sp_matrix(self.ibi_edge_index, self.ibi_params, (self.num_items, self.num_items))
         #  =============================  item level propagation  =============================
         #  ======== UI =================
         IL_items_feat = self.iui_gat_conv(self.items_feature, self.iui_edge_index)
@@ -300,7 +288,6 @@ class CrossCBR(nn.Module):
             IL_users_feature, IL_items_feature = self.one_propagate(self.item_level_graph, self.users_feature, IL_items_feat, self.item_level_dropout, test, self.UI_coefs)
 
         # aggregate the items embeddings within one bundle to obtain the bundle representation
-        # IL_items_feature = self.n_ibi @ IL_items_feature * self.nw + IL_items_feature * self.sw
         IL_bundles_feature = self.get_IL_bundle_rep(IL_items_feature, test)
 
         # ========== BI ================
@@ -311,7 +298,6 @@ class CrossCBR(nn.Module):
             BIL_bundles_feature, IL_items_feature2 = self.one_propagate(self.bi_propagate_graph, self.bundles_feature, IL_items_feat2, self.item_level_dropout, test, self.BI_coefs)
         
         # agg item -> user
-        # IL_items_feature2 = self.n_iui @ IL_items_feature2 * self.nw + IL_items_feature2 * self.sw
         BIL_users_feature = self.get_IL_user_rep(IL_items_feature2, test)
 
         # w3: 0.2, w4: 0.8

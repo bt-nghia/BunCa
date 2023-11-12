@@ -131,7 +131,6 @@ def main():
         optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=conf["l2_reg"])
 
         batch_cnt = len(dataset.train_loader)
-        test_interval_bs = int(batch_cnt * conf["test_interval"])
         ed_interval_bs = int(batch_cnt * conf["ed_interval"])
 
         best_metrics, best_perform = init_best_metrics(conf)
