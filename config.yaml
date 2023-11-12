@@ -35,6 +35,7 @@ Youshu:
   file_type: ".txt"
   topk_valid: 20
   nhead: 2
+  extra_layer: True
 
 NetEase:
   data_path: './datasets'
@@ -71,6 +72,7 @@ NetEase:
   file_type: ".txt"
   topk_valid: 20
   nhead: 2
+  extra_layer: False
 
 
 iFashion:
@@ -101,9 +103,10 @@ iFashion:
   topk_valid: 20
   file_type: ".txt"
   nhead: 2
+  extra_layer: False
 
 
-# ------------------- hai amazon datasets ---------------------
+# ------------------- amazon datasets ---------------------
 food:
   data_path: './datasets'
   batch_size_train: 128 
@@ -136,8 +139,8 @@ food:
   sep: "\t"
   file_type: ".txt"
   topk_valid: 3
-  nhead: 1
-
+  nhead: 2
+  extra_layer: True
 
 electronic:
   data_path: './datasets'
@@ -172,6 +175,7 @@ electronic:
   topk_valid: 3
   file_type: ".txt"
   nhead: 2
+  extra_layer: True
 
 
 clothing:
@@ -207,3 +211,4 @@ clothing:
   file_type: ".txt"
   topk_valid: 3
   nhead: 2
+  extra_layer: True
