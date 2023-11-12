@@ -63,14 +63,14 @@ NetEase:
   test_interval: 5
   topk_valid: 20
   UI_layers: [0.7, 0.3]
-  seed: 2023
+  seed: 2003
   UB_coefs: [1, 1]
   UI_coefs: [1, 1]
   BI_coefs: [1, 1]
   sep: "\t"
   file_type: ".txt"
   topk_valid: 20
-  nhead: 3
+  nhead: 2
 
 
 iFashion:

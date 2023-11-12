@@ -25,7 +25,7 @@ class AsymMatrix(MessagePassing):
 
     '''
     The Asymmatrix is inspired by GAT and GATv2 convolution 
-    by remove linear layer just keep edge's weight due to 
+    by removing linear layer just keep edge's weight due to 
     the large dataset such as NetEase
     '''
 
