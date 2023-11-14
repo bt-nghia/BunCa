@@ -43,6 +43,7 @@ class AsymMatrix(MessagePassing):
         edge_dim: Optional[int] = None,
         fill_value: Union[float, Tensor, str] = 'mean',
         bias: bool = True,
+        extra_layer = False,
         **kwargs,
     ):
         super().__init__(node_dim=0, **kwargs)
@@ -56,6 +57,13 @@ class AsymMatrix(MessagePassing):
         self.add_self_loops = add_self_loops
         self.edge_dim = edge_dim
         self.fill_value = fill_value
+        self.extra_layer = extra_layer
+
+        if self.extra_layer:
+            self.lin_l = Linear(in_channels, heads * out_channels, bias=bias,
+                                weight_initializer='glorot')
+            self.lin_r = Linear(in_channels, heads * out_channels, bias=bias,
+                                weight_initializer='glorot')
 
         self.att = Parameter(torch.Tensor(1, heads, out_channels))
 
@@ -72,6 +80,8 @@ class AsymMatrix(MessagePassing):
 
     def reset_parameters(self):
         super().reset_parameters()
+        self.lin_l.reset_parameters()
+        self.lin_r.reset_parameters()
         glorot(self.att)
         zeros(self.bias)
 
@@ -83,8 +93,12 @@ class AsymMatrix(MessagePassing):
         x_r: OptTensor = None
         if isinstance(x, Tensor):
             assert x.dim() == 2
-            x = x.expand(self.heads, x.shape[0], x.shape[1]).transpose(0,1)
-            x_l = x_r = x.view(-1, H, C)
+            if self.extra_layer:
+                x_l = self.lin_l(x).view(-1, H, C)
+                x_r = self.lin_r(x).view(-1, H, C)
+            else:
+                x = x.expand(self.heads, x.shape[0], x.shape[1]).transpose(0,1)
+                x_l = x_r = x.view(-1, H, C)
 
         assert x_l is not None
         assert x_r is not None

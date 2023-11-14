@@ -64,6 +64,7 @@ class CrossCBR(nn.Module):
         self.w2 = conf["w2"]
         self.w3 = conf["w3"]
         self.w4 = conf["w4"]
+        self.extra_layer = conf["extra_layer"]
 
         self.init_emb()
 
@@ -110,8 +111,8 @@ class CrossCBR(nn.Module):
         self.nw = conf["nw"]
         self.ibi_edge_index = torch.tensor(np.load("datasets/{}/n_neigh_ibi.npy".format(conf["dataset"]), allow_pickle=True)).to(self.device)
         self.iui_edge_index = torch.tensor(np.load("datasets/{}/n_neigh_iui.npy".format(conf["dataset"]), allow_pickle=True)).to(self.device)
-        self.iui_gat_conv = Amatrix(in_dim=64, out_dim=64, n_layer=1, dropout=0.1, heads=self.n_head, concat=False, self_loop=self.a_self_loop)
-        self.ibi_gat_conv = Amatrix(in_dim=64, out_dim=64, n_layer=1, dropout=0.1, heads=self.n_head, concat=False, self_loop=self.a_self_loop)
+        self.iui_gat_conv = Amatrix(in_dim=64, out_dim=64, n_layer=1, dropout=0.1, heads=self.n_head, concat=False, self_loop=self.a_self_loop, extra_layer=self.extra_layer)
+        self.ibi_gat_conv = Amatrix(in_dim=64, out_dim=64, n_layer=1, dropout=0.1, heads=self.n_head, concat=False, self_loop=self.a_self_loop, extra_layer=self.extra_layer)
     
 
     def init_md_dropouts(self):
@@ -385,7 +386,7 @@ class CrossCBR(nn.Module):
     
 
 class Amatrix(nn.Module):
-    def __init__(self, in_dim, out_dim, n_layer=1, dropout=0.0, heads=2, concat=False, self_loop=True):
+    def __init__(self, in_dim, out_dim, n_layer=1, dropout=0.0, heads=2, concat=False, self_loop=True, extra_layer=False):
         super(Amatrix, self).__init__()
         self.num_layer = n_layer
         self.dropout = dropout
@@ -394,12 +395,14 @@ class Amatrix(nn.Module):
         self.heads = heads
         self.concat = concat
         self.self_loop = self_loop
+        self.extra_layer = extra_layer
         self.convs = nn.ModuleList([AsymMatrix(in_channels=self.in_dim, 
                                               out_channels=self.out_dim, 
                                               dropout=self.dropout,
                                               heads=self.heads,
                                               concat=self.concat,
-                                              add_self_loops=self.self_loop) 
+                                              add_self_loops=self.self_loop,
+                                              extra_layer=self.extra_layer) 
                                               for _ in range(self.num_layer)])
 
 
