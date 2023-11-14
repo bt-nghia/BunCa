@@ -301,8 +301,8 @@ class CrossCBR(nn.Module):
         BIL_users_feature = self.get_IL_user_rep(IL_items_feature2, test)
 
         # w3: 0.2, w4: 0.8
-        fuse_users_feature = IL_users_feature * self.w3 + BIL_users_feature * self.w4
-        fuse_bundles_feature = IL_bundles_feature * self.w3 + BIL_bundles_feature * self.w4
+        fuse_users_feature = IL_users_feature * (1 - self.w4) + BIL_users_feature * self.w4
+        fuse_bundles_feature = IL_bundles_feature * (1 - self.w3) + BIL_bundles_feature * self.w3
 
         #  ============================= bundle level propagation =============================
         if test:
