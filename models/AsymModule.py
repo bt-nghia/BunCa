@@ -80,8 +80,9 @@ class AsymMatrix(MessagePassing):
 
     def reset_parameters(self):
         super().reset_parameters()
-        self.lin_l.reset_parameters()
-        self.lin_r.reset_parameters()
+        if self.extra_layer:
+            self.lin_l.reset_parameters()
+            self.lin_r.reset_parameters()
         glorot(self.att)
         zeros(self.bias)
 
