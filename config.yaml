@@ -35,7 +35,6 @@ NetEase:
   batch_size_test: 2048
   topk: [10, 20, 40, 80]
   neg_num: 1
-  # the following are the best settings
   aug_type: "ED"
   ed_interval: 1
   embedding_sizes: [64]
@@ -80,10 +79,16 @@ iFashion:
   self_loop: False
   c_lambdas: [0.25]
   c_temps: [0.2]
-  epochs: 50
-  sep: "\t"
+  epochs: 60
   topk_valid: 20
+  UI_layers: [0.7, 0.3]
+  seed: 2023
+  UB_coefs: [1, 1]
+  UI_coefs: [1, 1]
+  BI_coefs: [1, 1]
+  sep: "\t"
   file_type: ".txt"
+  topk_valid: 20
   nhead: 2
   extra_layer: False
 

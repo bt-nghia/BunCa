@@ -78,11 +78,11 @@ if __name__ == '__main__':
 
     ub, ui, bi = raw_graph
 
-    pbar = tqdm(enumerate([ui.T, bi.T]), total = 2, desc="gene", ncols=100)
+    pbar = tqdm(enumerate([ui.T, bi.T, ub.T, bi]), total = 4, desc="gene", ncols=100)
     asym_mat = []
     for i, mat in pbar:
         asym_mat.append(gen_ii_asym(mat))
 
-    pbar = tqdm(enumerate(["/iui_cooc.npz", "/ibi_cooc.npz"]), total = 2, desc="save", ncols=100)
+    pbar = tqdm(enumerate(["/iui_cooc.npz", "/ibi_cooc.npz", "/bub_cooc.npz", "/bib_cooc.npz"]), total = 4, desc="save", ncols=100)
     for i, data in pbar:
         save_sp_mat(asym_mat[i], dir + data)
