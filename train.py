@@ -28,7 +28,7 @@ def get_cmd():
     parser.add_argument("-w2", "--weightnonovl", default="1", type=float, help="weight of non ovl edges")
     parser.add_argument("-w3", "--UIweight", default="0.5", type=float)
     parser.add_argument("-w4", "--BIweight", default="0.5", type=float)
-    parser.add_argument("-sw", "--sweight", default="1", type=float, help="self weight in i-i matrix")
+    parser.add_argument("-sw", "--sweight", default="0", type=float, help="self weight in i-i matrix")
     parser.add_argument("-nw", "--nbweight", default="1", type=float, help="all neighbors (aggregated) weight")
 
     args = parser.parse_args()
