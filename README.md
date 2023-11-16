@@ -1,10 +1,9 @@
-origin and best are diff in topk Best update please fix it! (fixed top3 best update recall@3)
+# parameters need to be optimized
 
-we choose w3 w4 base on % edges in asymmatrix
-iui filtered(>=4) edges >= 20% edges in iui
-ibi filtered(>=4) edge ~ 1-2% edges in ibi
-we not tuning much you can tuning this coeficients 
-or filter mask in preProcess.py to get better results
+- `sw`: self weight in asym matrix
+- `nw`: neighbor weight in asym matrix (`sw` + `nw` = 1)
+- `w3`, `w4`: weight while fusing feature in item view (`w3`, `w4` in [0 ; 1])
+
 
 # how to run?
 

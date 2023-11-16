@@ -281,7 +281,7 @@ class CrossCBR(nn.Module):
     def propagate(self, test=False):
         #  =============================  item level propagation  =============================
         #  ======== UI =================
-        IL_items_feat = self.iui_gat_conv(self.items_feature, self.iui_edge_index)
+        IL_items_feat = self.iui_gat_conv(self.items_feature, self.iui_edge_index) * self.nw + self.items_feature * self.sw
 
         if test:
             IL_users_feature, IL_items_feature = self.one_propagate(self.item_level_graph_ori, self.users_feature, IL_items_feat, self.item_level_dropout, test, self.UI_coefs)
@@ -292,7 +292,7 @@ class CrossCBR(nn.Module):
         IL_bundles_feature = self.get_IL_bundle_rep(IL_items_feature, test)
 
         # ========== BI ================
-        IL_items_feat2 = self.ibi_gat_conv(self.items_feature, self.ibi_edge_index)
+        IL_items_feat2 = self.ibi_gat_conv(self.items_feature, self.ibi_edge_index) * self.nw + self.items_feature * self.sw
         if test:
             BIL_bundles_feature, IL_items_feature2 = self.one_propagate(self.bi_propagate_graph_ori, self.bundles_feature, IL_items_feat2, self.item_level_dropout, test, self.BI_coefs)
         else:
