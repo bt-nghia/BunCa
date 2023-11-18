@@ -17,7 +17,7 @@ Youshu:
   c_lambdas: [0.04] # the contrastive loss weight: lambda_1
   c_temps: [0.25] # the temperature in the contrastive loss: tau
   self_loop: False
-  epochs: 100
+  epochs: 120
   UI_layers: [0.7, 0.3]
   seed: 2023
   UB_coefs: [1, 1]
