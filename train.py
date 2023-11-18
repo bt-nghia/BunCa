@@ -119,6 +119,10 @@ def main():
         run_path = run_path + "/" + setting
         checkpoint_model_path = checkpoint_model_path + "/" + setting
         checkpoint_conf_path = checkpoint_conf_path + "/" + setting
+
+        log = open(log_path, "a")
+        log.write(str(conf) + "\n")
+        log.close()
             
         run = SummaryWriter(run_path)
 
