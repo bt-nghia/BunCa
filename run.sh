@@ -17,7 +17,7 @@ python train.py -d NetEase -w3 0.8 -w4 0.8
 # clothing
 python gene_ii_co_oc.py -d clothing
 python preProcess.py -d clothing
-python train.py -d clothing -w3 0.9 -w4 0.9
+!python train.py -d clothing -w3 0.1 -w4 0.1 -sw 0.8 -nw 0.2
 
 # food
 python gene_ii_co_oc.py -d food

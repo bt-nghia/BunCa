@@ -171,7 +171,7 @@ clothing:
   self_loop: False
   lrs: [1.0e-3] 
   l2_regs: [1.0e-4] 
-  c_lambdas: [0.04] 
+  c_lambdas: [0.01] 
   c_temps: [0.25] 
   epochs: 30
   UI_layers: [0.7, 0.3]
@@ -184,3 +184,14 @@ clothing:
   topk_valid: 3
   nhead: 2
   extra_layer: True
+
+# 2023-11-22 14:38:28, Top_1, Val:  recall: 0.506173, ndcg: 0.506173
+# 2023-11-22 14:38:28, Top_1, Test: recall: 0.448560, ndcg: 0.448560
+# 2023-11-22 14:38:28, Top_3, Val:  recall: 0.983539, ndcg: 0.804663
+# 2023-11-22 14:38:28, Top_3, Test: recall: 0.987654, ndcg: 0.783841
+# 2023-11-22 14:38:28, Top_5, Val:  recall: 0.995885, ndcg: 0.809980
+# 2023-11-22 14:38:28, Top_5, Test: recall: 0.995885, ndcg: 0.787206
+# 2023-11-22 14:38:28, Top_10, Val:  recall: 1.000000, ndcg: 0.811446
+# 2023-11-22 14:38:28, Top_10, Test: recall: 1.000000, ndcg: 0.788504
+# 2023-11-22 14:38:28, Top_20, Val:  recall: 1.000000, ndcg: 0.811446
+# 2023-11-22 14:38:28, Top_20, Test: recall: 1.000000, ndcg: 0.788504
