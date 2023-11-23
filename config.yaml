@@ -58,7 +58,7 @@ NetEase:
   file_type: ".txt"
   topk_valid: 20
   nhead: 2
-  extra_layer: False
+  extra_layer: True #Fasle
 
 
 iFashion:
@@ -90,7 +90,7 @@ iFashion:
   file_type: ".txt"
   topk_valid: 20
   nhead: 2
-  extra_layer: False
+  extra_layer: True #False
 
 
 # ------------------- amazon datasets ---------------------
@@ -98,7 +98,7 @@ food:
   data_path: './datasets'
   batch_size_train: 128 
   batch_size_test: 128 
-  topk: [1, 3, 5, 10, 20]
+  topk: [1, 2, 3, 4, 5]
   neg_num: 1 
   aug_type: "ED" 
   ed_interval: 1 
@@ -165,7 +165,7 @@ electronic:
   data_path: './datasets'
   batch_size_train: 128 
   batch_size_test: 128 
-  topk: [1, 3, 5, 10, 20]
+  topk: [1, 2, 3, 4, 5]
   neg_num: 1 
   aug_type: "ED" 
   ed_interval: 1 
@@ -188,7 +188,7 @@ electronic:
   sep: "\t"
   topk_valid: 3
   file_type: ".txt"
-  nhead: 2
+  nhead: 1
   extra_layer: True
 
 # epoch: 13, loss: 0.1478, bpr_loss: 0.1293, c_loss: 1.8485: 100% 10/10 [00:01<00:00,  9.54it/s]
@@ -209,7 +209,7 @@ clothing:
   data_path: './datasets'
   batch_size_train: 128 
   batch_size_test: 128 
-  topk: [1, 3, 5, 10, 20]
+  topk: [1, 2, 3, 4, 5]
   neg_num: 1 
   aug_type: "ED" 
   ed_interval: 1 
