@@ -260,4 +260,25 @@ clothing:
 # 2023-11-25 11:17:30, Best in epoch 7, TOP 5: REC_T=0.98765, NDCG_T=0.79323
 
 #!python train.py -d clothing -w3 0.1 -w4 0.1 -sw 0.9 -nw 0.1 2 head
+# 2023-11-25 11:20:14, Best in epoch 6, TOP 1: REC_V=0.50617, NDCG_V=0.50617
+# 2023-11-25 11:20:14, Best in epoch 6, TOP 1: REC_T=0.46502, NDCG_T=0.46502
+# 2023-11-25 11:20:14, Best in epoch 6, TOP 2: REC_V=0.94650, NDCG_V=0.78399
+# 2023-11-25 11:20:14, Best in epoch 6, TOP 2: REC_T=0.93004, NDCG_T=0.75842
+# 2023-11-25 11:20:14, Best in epoch 6, TOP 3: REC_V=0.98765, NDCG_V=0.80457
+# 2023-11-25 11:20:14, Best in epoch 6, TOP 3: REC_T=0.97531, NDCG_T=0.78105
+# 2023-11-25 11:20:14, Best in epoch 6, TOP 4: REC_V=0.99588, NDCG_V=0.80811
+# 2023-11-25 11:20:14, Best in epoch 6, TOP 4: REC_T=0.98765, NDCG_T=0.78637
+# 2023-11-25 11:20:14, Best in epoch 6, TOP 5: REC_V=0.99588, NDCG_V=0.80811
+# 2023-11-25 11:20:14, Best in epoch 6, TOP 5: REC_T=0.99588, NDCG_T=0.78955
 
+#!python train.py -d clothing -w3 0.1 -w4 0.1 -sw 0.8 -nw 0.2 2 head
+# 2023-11-25 11:22:37, Best in epoch 6, TOP 1: REC_V=0.49794, NDCG_V=0.49794
+# 2023-11-25 11:22:37, Best in epoch 6, TOP 1: REC_T=0.47325, NDCG_T=0.47325
+# 2023-11-25 11:22:37, Best in epoch 6, TOP 2: REC_V=0.93827, NDCG_V=0.77576
+# 2023-11-25 11:22:37, Best in epoch 6, TOP 2: REC_T=0.93004, NDCG_T=0.76145
+# 2023-11-25 11:22:37, Best in epoch 6, TOP 3: REC_V=0.98765, NDCG_V=0.80045
+# 2023-11-25 11:22:37, Best in epoch 6, TOP 3: REC_T=0.97942, NDCG_T=0.78614
+# 2023-11-25 11:22:37, Best in epoch 6, TOP 4: REC_V=0.99588, NDCG_V=0.80400
+# 2023-11-25 11:22:37, Best in epoch 6, TOP 4: REC_T=0.98765, NDCG_T=0.78969
+# 2023-11-25 11:22:37, Best in epoch 6, TOP 5: REC_V=0.99588, NDCG_V=0.80400
+# 2023-11-25 11:22:37, Best in epoch 6, TOP 5: REC_T=0.99588, NDCG_T=0.79287

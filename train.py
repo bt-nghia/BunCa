@@ -239,6 +239,9 @@ def log_metrics(conf, model, metrics, run, log_path, checkpoint_model_path, chec
             print(best_perform["test"][topk])
             log.write(best_perform["val"][topk] + "\n")
             log.write(best_perform["test"][topk] + "\n")
+        
+        print("saving asym matrix...")
+        model.save_asym()
 
     log.close()
 
