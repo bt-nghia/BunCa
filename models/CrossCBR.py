@@ -119,8 +119,8 @@ class CrossCBR(nn.Module):
 
 
     def save_asym(self):
-        torch.save(self.ibi_attn, "datasets/{}/iui_attn".format(self.conf["dataset"]))
-        torch.save(self.iui_attn, "datasets/{}/ibi_attn".format(self.conf["dataset"]))
+        torch.save(self.ibi_attn, "datasets/{}/ibi_attn".format(self.conf["dataset"]))
+        torch.save(self.iui_attn, "datasets/{}/iui_attn".format(self.conf["dataset"]))
 
 
     def init_md_dropouts(self):

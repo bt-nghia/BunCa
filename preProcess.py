@@ -145,6 +145,11 @@ if __name__=='__main__':
     bib_edge_index = torch.tensor([list(n_bib.row), list(n_bib.col)], dtype=torch.int64)
     bub_edge_index = torch.tensor([list(n_bub.row), list(n_bub.col)], dtype=torch.int64)
 
+    print('ibi edge:', ibi_edge_index.shape)
+    print('iui_edge:', iui_edge_index.shape)
+    print('bib edge:', bib_edge_index.shape)
+    print('bub edge:', bub_edge_index.shape)
+
     # --------------------- saving --------------------------
 
     np.save(save_path_ibi, ibi_edge_index)
