@@ -54,3 +54,6 @@ test
 
 iui_attn
 ibi_attn
+
+*.npy
+*.npz
