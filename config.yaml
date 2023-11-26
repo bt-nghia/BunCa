@@ -124,43 +124,18 @@ food:
   nhead: 2
   extra_layer: True
 
-# param 1
-# 2023-11-22 14:48:11, Best in epoch 7, TOP 1: REC_V=0.42202, NDCG_V=0.42202
-# 2023-11-22 14:48:11, Best in epoch 7, TOP 1: REC_T=0.42661, NDCG_T=0.42661
-# 2023-11-22 14:48:11, Best in epoch 7, TOP 3: REC_V=0.85321, NDCG_V=0.68446
-# 2023-11-22 14:48:11, Best in epoch 7, TOP 3: REC_T=0.88991, NDCG_T=0.70751
-# 2023-11-22 14:48:11, Best in epoch 7, TOP 5: REC_V=0.92661, NDCG_V=0.71486
-# 2023-11-22 14:48:11, Best in epoch 7, TOP 5: REC_T=0.92661, NDCG_T=0.72251
-# 2023-11-22 14:48:11, Best in epoch 7, TOP 10: REC_V=0.94495, NDCG_V=0.72121
-# 2023-11-22 14:48:11, Best in epoch 7, TOP 10: REC_T=0.95872, NDCG_T=0.73365
-# 2023-11-22 14:48:11, Best in epoch 7, TOP 20: REC_V=0.97248, NDCG_V=0.72809
-# 2023-11-22 14:48:11, Best in epoch 7, TOP 20: REC_T=0.99541, NDCG_T=0.74292
 
-# param 2
-# epoch: 11, loss: 0.1461, bpr_loss: 0.1275, c_loss: 1.8591: 100% 10/10 [00:01<00:00,  9.27it/s]
-# 2023-11-22 14:55:35, Top_1, Val:  recall: 0.422018, ndcg: 0.422018
-# 2023-11-22 14:55:35, Top_1, Test: recall: 0.463303, ndcg: 0.463303
-# 2023-11-22 14:55:35, Top_3, Val:  recall: 0.857798, ndcg: 0.688556
-# 2023-11-22 14:55:35, Top_3, Test: recall: 0.880734, ndcg: 0.719465
-# 2023-11-22 14:55:35, Top_5, Val:  recall: 0.926606, ndcg: 0.717185
-# 2023-11-22 14:55:35, Top_5, Test: recall: 0.940367, ndcg: 0.743942
-# 2023-11-22 14:55:35, Top_10, Val:  recall: 0.954128, ndcg: 0.726081
-# 2023-11-22 14:55:35, Top_10, Test: recall: 0.967890, ndcg: 0.753536
-# 2023-11-22 14:55:35, Top_20, Val:  recall: 0.977064, ndcg: 0.731694
-# 2023-11-22 14:55:35, Top_20, Test: recall: 0.995413, ndcg: 0.760697
+# 2023-11-26 10:32:33, Best in epoch 9, TOP 1: REC_V=0.40367, NDCG_V=0.40367
+# 2023-11-26 10:32:33, Best in epoch 9, TOP 1: REC_T=0.48165, NDCG_T=0.48165
+# 2023-11-26 10:32:33, Best in epoch 9, TOP 2: REC_V=0.80275, NDCG_V=0.65546
+# 2023-11-26 10:32:33, Best in epoch 9, TOP 2: REC_T=0.83945, NDCG_T=0.70740
+# 2023-11-26 10:32:33, Best in epoch 9, TOP 3: REC_V=0.86697, NDCG_V=0.68757
+# 2023-11-26 10:32:33, Best in epoch 9, TOP 3: REC_T=0.89908, NDCG_T=0.73721
+# 2023-11-26 10:32:33, Best in epoch 9, TOP 4: REC_V=0.91284, NDCG_V=0.70733
+# 2023-11-26 10:32:33, Best in epoch 9, TOP 4: REC_T=0.93119, NDCG_T=0.75104
+# 2023-11-26 10:32:33, Best in epoch 9, TOP 5: REC_V=0.92661, NDCG_V=0.71265
+# 2023-11-26 10:32:33, Best in epoch 9, TOP 5: REC_T=0.94954, NDCG_T=0.75814
 
-
-# epoch: 12, loss: 0.1310, bpr_loss: 0.1310, c_loss: 1.9454: 100% 10/10 [00:01<00:00,  9.21it/s]
-# 2023-11-22 15:01:23, Top_1, Val:  recall: 0.412844, ndcg: 0.412844
-# 2023-11-22 15:01:23, Top_1, Test: recall: 0.458716, ndcg: 0.458716
-# 2023-11-22 15:01:23, Top_3, Val:  recall: 0.871560, ndcg: 0.690850
-# 2023-11-22 15:01:23, Top_3, Test: recall: 0.885321, ndcg: 0.718865
-# 2023-11-22 15:01:23, Top_5, Val:  recall: 0.922018, ndcg: 0.712179
-# 2023-11-22 15:01:23, Top_5, Test: recall: 0.940367, ndcg: 0.741567
-# 2023-11-22 15:01:23, Top_10, Val:  recall: 0.958716, ndcg: 0.724195
-# 2023-11-22 15:01:23, Top_10, Test: recall: 0.967890, ndcg: 0.751056
-# 2023-11-22 15:01:23, Top_20, Val:  recall: 0.977064, ndcg: 0.728667
-# 2023-11-22 15:01:23, Top_20, Test: recall: 0.995413, ndcg: 0.758325
 electronic:
   data_path: './datasets'
   batch_size_train: 128 
@@ -191,7 +166,6 @@ electronic:
   nhead: 1
   extra_layer: True
 
-# epoch: 13, loss: 0.1478, bpr_loss: 0.1293, c_loss: 1.8485: 100% 10/10 [00:01<00:00,  9.54it/s]
 # 2023-11-22 15:08:12, Top_1, Val:  recall: 0.331776, ndcg: 0.331776
 # 2023-11-22 15:08:12, Top_1, Test: recall: 0.443925, ndcg: 0.443925
 # 2023-11-22 15:08:12, Top_3, Val:  recall: 0.808411, ndcg: 0.615980
@@ -234,6 +208,19 @@ clothing:
   topk_valid: 3
   nhead: 2
   extra_layer: True
+
+# 3 head !python preProcess.py -d clothing -ibi 2 -iui 4
+# !python train.py -d clothing -w3 0.1 -w4 0.1 -sw 0.9 -nw 0.1
+# 2023-11-26 04:08:33, Best in epoch 6, TOP 1: REC_V=0.48560, NDCG_V=0.48560
+# 2023-11-26 04:08:33, Best in epoch 6, TOP 1: REC_T=0.48560, NDCG_T=0.48560
+# 2023-11-26 04:08:33, Best in epoch 6, TOP 2: REC_V=0.95062, NDCG_V=0.77899
+# 2023-11-26 04:08:33, Best in epoch 6, TOP 2: REC_T=0.94239, NDCG_T=0.77380
+# 2023-11-26 04:08:33, Best in epoch 6, TOP 3: REC_V=0.98765, NDCG_V=0.79751
+# 2023-11-26 04:08:33, Best in epoch 6, TOP 3: REC_T=0.97119, NDCG_T=0.78820
+# 2023-11-26 04:08:33, Best in epoch 6, TOP 4: REC_V=0.99588, NDCG_V=0.80106
+# 2023-11-26 04:08:33, Best in epoch 6, TOP 4: REC_T=0.98354, NDCG_T=0.79352
+# 2023-11-26 04:08:33, Best in epoch 6, TOP 5: REC_V=1.00000, NDCG_V=0.80265
+# 2023-11-26 04:08:33, Best in epoch 6, TOP 5: REC_T=0.98765, NDCG_T=0.79511
 
 # !python train.py -d clothing -w3 0.1 -w4 0.1 -sw 0.8 -nw 0.2 3 head
 # 2023-11-25 11:13:46, Best in epoch 8, TOP 1: REC_V=0.49794, NDCG_V=0.49794

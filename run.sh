@@ -20,9 +20,9 @@ python preProcess.py -d clothing
 python train.py -d clothing -w3 0.1 -w4 0.1 -sw 0.8 -nw 0.2
 
 # food
-python gene_ii_co_oc.py -d food
-python preProcess.py -d food
-python train.py -d food -w3 0.1 -w4 0.1 -sw 0.8 -nw 0.2
+!python gene_ii_co_oc.py -d food
+!python preProcess.py -d food -ibi 2 -iui 4
+!python train.py -d food -w3 0.1 -w4 0.1 -sw 0.9 -nw 0.8 #nhead 2
 
 # elctronic
 python gene_ii_co_oc.py -d electronic
