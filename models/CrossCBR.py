@@ -136,8 +136,8 @@ class CrossCBR(nn.Module):
 
     
     def drop_cells(self):
-        self.ibi_edge_index_drop, _ibi_shape = drop_cell(self.ibi_edge_index, 0.0)
-        self.iui_edge_index_drop, _iui_shape = drop_cell(self.iui_edge_index, 0.0)
+        self.ibi_edge_index_drop, _ibi_shape = drop_cell(self.ibi_edge_index, 0.2)
+        self.iui_edge_index_drop, _iui_shape = drop_cell(self.iui_edge_index, 0.2)
 
     def save_asym(self):
         torch.save(self.ibi_attn, "datasets/{}/ibi_attn".format(self.conf["dataset"]))
@@ -380,14 +380,14 @@ class CrossCBR(nn.Module):
         pred = torch.sum(IL_users_feature * IL_bundles_feature, 2) + torch.sum(BL_users_feature * BL_bundles_feature, 2)
         bpr_loss = cal_bpr_loss(pred)
 
-        u_cross_view_cl = self.cal_c_loss(IL_users_feature, BL_users_feature)
-        b_cross_view_cl = self.cal_c_loss(IL_bundles_feature, BL_bundles_feature)
+        # u_cross_view_cl = self.cal_c_loss(IL_users_feature, BL_users_feature)
+        # b_cross_view_cl = self.cal_c_loss(IL_bundles_feature, BL_bundles_feature)
 
-        c_losses = [u_cross_view_cl, b_cross_view_cl]
+        # c_losses = [u_cross_view_cl, b_cross_view_cl]
 
-        c_loss = sum(c_losses) / len(c_losses)
+        # c_loss = sum(c_losses) / len(c_losses)
 
-        return bpr_loss, c_loss
+        return bpr_loss, torch.zeros(1).to(self.device)[0]
 
 
     def forward(self, batch, ED_drop=False):

@@ -248,6 +248,8 @@ clothing:
   nhead: 3
   extra_layer: True
 
+
+# drop edge 0.2
 # rm contrastive
 # !python gene_ii_co_oc.py -d clothing
 # !python preProcess.py -d clothing -ibi 2 -iui 4
