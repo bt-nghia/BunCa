@@ -47,6 +47,23 @@ def np_edge_dropout(values, dropout_ratio):
     return values
 
 
+def drop_cell(mat, drop_rate):
+    '''
+    mat : torch.sparse.FloatTensor
+    return non masked cells; shape
+    '''
+    mat_idx = mat.coalesce().indices()
+    mask = np.random.choice([0, 1], size=mat_idx[0].shape, p=[drop_rate, 1-drop_rate])
+    non_mask_idx = (mask!=0).nonzero()
+
+    non_masked_src = mat_idx[0][non_mask_idx].view(-1)
+    non_masked_dst = mat_idx[1][non_mask_idx].view(-1)
+
+    non_masked_cells = torch.stack((non_masked_src, non_masked_dst), dim=0)
+
+    return non_masked_cells, mat.shape
+
+
 class CrossCBR(nn.Module):
     def __init__(self, conf, raw_graph):
         super().__init__()
