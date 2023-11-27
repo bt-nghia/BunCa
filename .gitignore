@@ -40,9 +40,9 @@ checkpoints/*
 runs
 runs*
 runs/*
-log
-log*
-log/*
+# log
+# log*
+# log/*
 
 datasets/Youshu/ibi_cooc.npz
 datasets/Youshu/iui_cooc.npz
