@@ -52,7 +52,7 @@ def drop_cell(mat, drop_rate):
     mat : torch.sparse.FloatTensor
     return non masked cells; shape
     '''
-    mat_idx = mat.coalesce().indices()
+    mat_idx = mat
     mask = np.random.choice([0, 1], size=mat_idx[0].shape, p=[drop_rate, 1-drop_rate])
     non_mask_idx = (mask!=0).nonzero()
 
@@ -134,6 +134,10 @@ class CrossCBR(nn.Module):
         self.iui_attn = None
         self.ibi_attn = None
 
+    
+    def drop_cells(self):
+        self.ibi_edge_index_drop, _ibi_shape = drop_cell(self.ibi_edge_index, 0.0)
+        self.iui_edge_index_drop, _iui_shape = drop_cell(self.iui_edge_index, 0.0)
 
     def save_asym(self):
         torch.save(self.ibi_attn, "datasets/{}/ibi_attn".format(self.conf["dataset"]))
@@ -305,8 +309,11 @@ class CrossCBR(nn.Module):
 
     def propagate(self, test=False):
         #  =============================  item level propagation  =============================
+        self.drop_cells()
+
+
         #  ======== UI =================
-        IL_items_feat, self.iui_attn = self.iui_gat_conv(self.items_feature, self.iui_edge_index, return_attention_weights=True) 
+        IL_items_feat, self.iui_attn = self.iui_gat_conv(self.items_feature, self.iui_edge_index_drop, return_attention_weights=True) 
         IL_items_feat = IL_items_feat * self.nw + self.items_feature * self.sw
         if test:
             IL_users_feature, IL_items_feature = self.one_propagate(self.item_level_graph_ori, self.users_feature, IL_items_feat, self.item_level_dropout, test, self.UI_coefs)
@@ -316,8 +323,9 @@ class CrossCBR(nn.Module):
         # aggregate the items embeddings within one bundle to obtain the bundle representation
         IL_bundles_feature = self.get_IL_bundle_rep(IL_items_feature, test)
 
+
         # ========== BI ================
-        IL_items_feat2, self.ibi_attn = self.ibi_gat_conv(self.items_feature, self.ibi_edge_index, return_attention_weights=True) 
+        IL_items_feat2, self.ibi_attn = self.ibi_gat_conv(self.items_feature, self.ibi_edge_index_drop, return_attention_weights=True) 
         IL_items_feat2 = IL_items_feat2 * self.nw + self.items_feature * self.sw
         if test:
             BIL_bundles_feature, IL_items_feature2 = self.one_propagate(self.bi_propagate_graph_ori, self.bundles_feature, IL_items_feat2, self.item_level_dropout, test, self.BI_coefs)
