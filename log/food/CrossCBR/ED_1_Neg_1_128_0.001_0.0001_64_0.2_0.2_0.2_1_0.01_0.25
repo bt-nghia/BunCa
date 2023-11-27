@@ -1405,3 +1405,45 @@
 2023-11-27 19:19:34, Top_4, Test: recall: 0.940367, ndcg: 0.750586
 2023-11-27 19:19:34, Top_5, Val:  recall: 0.926606, ndcg: 0.712552
 2023-11-27 19:19:34, Top_5, Test: recall: 0.958716, ndcg: 0.757684
+{'data_path': './datasets', 'batch_size_train': 128, 'batch_size_test': 128, 'topk': [1, 2, 3, 4, 5], 'neg_num': 1, 'aug_type': 'ED', 'ed_interval': 1, 'embedding_sizes': [64], 'num_layerss': [1], 'item_level_ratios': [0.2], 'bundle_level_ratios': [0.2], 'bundle_agg_ratios': [0.2], 'self_loop': False, 'lrs': [0.001], 'l2_regs': [0.0001], 'c_lambdas': [0.01], 'c_temps': [0.25], 'epochs': 30, 'UI_layers': [0.7, 0.3], 'seed': 2023, 'UB_coefs': [1, 1], 'UI_coefs': [1, 1], 'BI_coefs': [1, 1], 'sep': '\t', 'file_type': '.txt', 'topk_valid': 3, 'nhead': 3, 'extra_layer': True, 'dataset': 'food', 'model': 'CrossCBR', 'gpu': '0', 'info': '', 'num_users': 879, 'num_bundles': 1784, 'num_items': 3767, 'w1': 1.0, 'w2': 1.0, 'w3': 0.1, 'w4': 0.1, 'sw': 0.9, 'nw': 0.1, 'device': device(type='cpu'), 'l2_reg': 0.0001, 'embedding_size': 64, 'item_level_ratio': 0.2, 'bundle_level_ratio': 0.2, 'bundle_agg_ratio': 0.2, 'num_layers': 1, 'c_lambda': 0.01, 'c_temp': 0.25}
+2023-11-27 19:45:25, Top_1, Val:  recall: 0.110092, ndcg: 0.110092
+2023-11-27 19:45:25, Top_1, Test: recall: 0.110092, ndcg: 0.110092
+2023-11-27 19:45:25, Top_2, Val:  recall: 0.220183, ndcg: 0.179552
+2023-11-27 19:45:25, Top_2, Test: recall: 0.211009, ndcg: 0.173764
+2023-11-27 19:45:25, Top_3, Val:  recall: 0.284404, ndcg: 0.211662
+2023-11-27 19:45:25, Top_3, Test: recall: 0.279817, ndcg: 0.208167
+2023-11-27 19:45:25, Top_4, Val:  recall: 0.307339, ndcg: 0.221540
+2023-11-27 19:45:25, Top_4, Test: recall: 0.344037, ndcg: 0.235825
+2023-11-27 19:45:25, Top_5, Val:  recall: 0.353211, ndcg: 0.239285
+2023-11-27 19:45:25, Top_5, Test: recall: 0.385321, ndcg: 0.251796
+2023-11-27 19:45:25, Best in epoch 0, TOP 1: REC_V=0.11009, NDCG_V=0.11009
+2023-11-27 19:45:25, Best in epoch 0, TOP 1: REC_T=0.11009, NDCG_T=0.11009
+2023-11-27 19:45:25, Best in epoch 0, TOP 2: REC_V=0.22018, NDCG_V=0.17955
+2023-11-27 19:45:25, Best in epoch 0, TOP 2: REC_T=0.21101, NDCG_T=0.17376
+2023-11-27 19:45:25, Best in epoch 0, TOP 3: REC_V=0.28440, NDCG_V=0.21166
+2023-11-27 19:45:25, Best in epoch 0, TOP 3: REC_T=0.27982, NDCG_T=0.20817
+2023-11-27 19:45:25, Best in epoch 0, TOP 4: REC_V=0.30734, NDCG_V=0.22154
+2023-11-27 19:45:25, Best in epoch 0, TOP 4: REC_T=0.34404, NDCG_T=0.23583
+2023-11-27 19:45:25, Best in epoch 0, TOP 5: REC_V=0.35321, NDCG_V=0.23929
+2023-11-27 19:45:25, Best in epoch 0, TOP 5: REC_T=0.38532, NDCG_T=0.25180
+{'data_path': './datasets', 'batch_size_train': 128, 'batch_size_test': 128, 'topk': [1, 2, 3, 4, 5], 'neg_num': 1, 'aug_type': 'ED', 'ed_interval': 1, 'embedding_sizes': [64], 'num_layerss': [1], 'item_level_ratios': [0.2], 'bundle_level_ratios': [0.2], 'bundle_agg_ratios': [0.2], 'self_loop': False, 'lrs': [0.001], 'l2_regs': [0.0001], 'c_lambdas': [0.01], 'c_temps': [0.25], 'epochs': 30, 'UI_layers': [0.7, 0.3], 'seed': 2023, 'UB_coefs': [1, 1], 'UI_coefs': [1, 1], 'BI_coefs': [1, 1], 'sep': '\t', 'file_type': '.txt', 'topk_valid': 3, 'nhead': 3, 'extra_layer': True, 'dataset': 'food', 'model': 'CrossCBR', 'gpu': '0', 'info': '', 'num_users': 879, 'num_bundles': 1784, 'num_items': 3767, 'w1': 1.0, 'w2': 1.0, 'w3': 0.1, 'w4': 0.1, 'sw': 0.9, 'nw': 0.1, 'device': device(type='cpu'), 'l2_reg': 0.0001, 'embedding_size': 64, 'item_level_ratio': 0.2, 'bundle_level_ratio': 0.2, 'bundle_agg_ratio': 0.2, 'num_layers': 1, 'c_lambda': 0.01, 'c_temp': 0.25}
+2023-11-27 19:46:17, Top_1, Val:  recall: 0.110092, ndcg: 0.110092
+2023-11-27 19:46:17, Top_1, Test: recall: 0.110092, ndcg: 0.110092
+2023-11-27 19:46:17, Top_2, Val:  recall: 0.220183, ndcg: 0.179552
+2023-11-27 19:46:17, Top_2, Test: recall: 0.211009, ndcg: 0.173764
+2023-11-27 19:46:17, Top_3, Val:  recall: 0.284404, ndcg: 0.211662
+2023-11-27 19:46:17, Top_3, Test: recall: 0.279817, ndcg: 0.208167
+2023-11-27 19:46:17, Top_4, Val:  recall: 0.307339, ndcg: 0.221540
+2023-11-27 19:46:17, Top_4, Test: recall: 0.344037, ndcg: 0.235825
+2023-11-27 19:46:17, Top_5, Val:  recall: 0.353211, ndcg: 0.239285
+2023-11-27 19:46:17, Top_5, Test: recall: 0.385321, ndcg: 0.251796
+2023-11-27 19:46:17, Best in epoch 0, TOP 1: REC_V=0.11009, NDCG_V=0.11009
+2023-11-27 19:46:17, Best in epoch 0, TOP 1: REC_T=0.11009, NDCG_T=0.11009
+2023-11-27 19:46:17, Best in epoch 0, TOP 2: REC_V=0.22018, NDCG_V=0.17955
+2023-11-27 19:46:17, Best in epoch 0, TOP 2: REC_T=0.21101, NDCG_T=0.17376
+2023-11-27 19:46:17, Best in epoch 0, TOP 3: REC_V=0.28440, NDCG_V=0.21166
+2023-11-27 19:46:17, Best in epoch 0, TOP 3: REC_T=0.27982, NDCG_T=0.20817
+2023-11-27 19:46:17, Best in epoch 0, TOP 4: REC_V=0.30734, NDCG_V=0.22154
+2023-11-27 19:46:17, Best in epoch 0, TOP 4: REC_T=0.34404, NDCG_T=0.23583
+2023-11-27 19:46:17, Best in epoch 0, TOP 5: REC_V=0.35321, NDCG_V=0.23929
+2023-11-27 19:46:17, Best in epoch 0, TOP 5: REC_T=0.38532, NDCG_T=0.25180
