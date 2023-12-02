@@ -357,14 +357,14 @@ class CrossCBR(nn.Module):
         pred = torch.sum(IL_users_feature * IL_bundles_feature, 2) + torch.sum(BL_users_feature * BL_bundles_feature, 2)
         bpr_loss = cal_bpr_loss(pred)
 
-        # u_cross_view_cl = self.cal_c_loss(IL_users_feature, BL_users_feature)
-        # b_cross_view_cl = self.cal_c_loss(IL_bundles_feature, BL_bundles_feature)
+        u_cross_view_cl = self.cal_c_loss(IL_users_feature, BL_users_feature)
+        b_cross_view_cl = self.cal_c_loss(IL_bundles_feature, BL_bundles_feature)
 
-        # c_losses = [u_cross_view_cl, b_cross_view_cl]
+        c_losses = [u_cross_view_cl, b_cross_view_cl]
 
-        # c_loss = sum(c_losses) / len(c_losses)
+        c_loss = sum(c_losses) / len(c_losses)
 
-        return bpr_loss, torch.zeros(1).to(self.device)[0]
+        return bpr_loss, c_loss
 
 
     def forward(self, batch, ED_drop=False):
