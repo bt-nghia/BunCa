@@ -17,7 +17,7 @@ Youshu:
   c_lambdas: [0.04] # the contrastive loss weight: lambda_1
   c_temps: [0.25] # the temperature in the contrastive loss: tau
   self_loop: False
-  epochs: 120
+  epochs: 200
   UI_layers: [0.7, 0.3]
   seed: 2023
   UB_coefs: [1, 1]
@@ -47,7 +47,7 @@ NetEase:
   self_loop: False
   c_lambdas: [0.1]
   c_temps: [0.25]
-  epochs: 60
+  epochs: 100
   topk_valid: 20
   UI_layers: [0.7, 0.3]
   seed: 2023
@@ -79,7 +79,7 @@ iFashion:
   self_loop: False
   c_lambdas: [0.25]
   c_temps: [0.2]
-  epochs: 60
+  epochs: 100
   topk_valid: 20
   UI_layers: [0.7, 0.3]
   seed: 2023
