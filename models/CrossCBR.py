@@ -114,11 +114,8 @@ class CrossCBR(nn.Module):
         self.iui_gat_conv = Amatrix(in_dim=64, out_dim=64, n_layer=1, dropout=0.1, heads=self.n_head, concat=False, self_loop=self.a_self_loop, extra_layer=self.extra_layer)
         self.ibi_gat_conv = Amatrix(in_dim=64, out_dim=64, n_layer=1, dropout=0.1, heads=self.n_head, concat=False, self_loop=self.a_self_loop, extra_layer=self.extra_layer)
 
-        # print(self.ibi_edge_index)
-        print(self.ibi_edge_index.shape)
         self.iui_attn = None
         self.ibi_attn = None
-        self.construct_hyper_graph()
 
     
     def construct_hyper_graph(self, threshold=10):
@@ -128,11 +125,19 @@ class CrossCBR(nn.Module):
         bub_graph = self.ub_graph.T @ self.ub_graph
         bub_graph = bub_graph > threshold
 
-        ub_view = sp.vstack((self.ub_graph, bub_graph))
-        ub_view = sp.hstack((ub_view, sp.vstack((ubu_graph, self.ub_graph.T))))
+        # ub_view = sp.vstack((self.ub_graph, bub_graph))
+        # ub_view = sp.hstack((ub_view, sp.vstack((ubu_graph, self.ub_graph.T))))
+        ub_view = sp.bmat([[self.ub_graph, bub_graph], 
+                           [ubu_graph , self.ub_graph.T]])
+        
         modification_ratio = self.conf["item_level_ratio"]
         
-        # if modification_ratio != 0:
+        if modification_ratio != 0:
+            if self.conf["aug_type"] == "ED":
+                graph = ub_view.tocoo()
+                values = np_edge_dropout(graph.data, modification_ratio)
+                ub_view = sp.coo_matrix((values, (graph.row, graph.col)), shape=graph.shape).tocsr()
+
         self.ub_hyper_propagation_graph_ori = to_tensor(laplace_transform(ub_view)).to(self.device)
 
 
@@ -389,6 +394,7 @@ class CrossCBR(nn.Module):
             self.get_item_level_graph()
             self.get_bundle_level_graph()
             self.get_bundle_agg_graph()
+            self.construct_hyper_graph()
 
         # users: [bs, 1]
         # bundles: [bs, 1+neg_num]
