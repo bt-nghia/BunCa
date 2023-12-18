@@ -118,6 +118,7 @@ class CrossCBR(nn.Module):
         print(self.ibi_edge_index.shape)
         self.iui_attn = None
         self.ibi_attn = None
+        self.construct_hyper_graph()
 
     
     def construct_hyper_graph(self, threshold=10):
@@ -127,8 +128,8 @@ class CrossCBR(nn.Module):
         bub_graph = self.ub_graph.T @ self.ub_graph
         bub_graph = bub_graph > threshold
 
-        ub_view = sp.stack((self.ub_graph, bub_graph))
-        ub_view = sp.stack((ub_view, sp.vstack((ubu_graph, self.ub_graph.T))))
+        ub_view = sp.vstack((self.ub_graph, bub_graph))
+        ub_view = sp.hstack((ub_view, sp.vstack((ubu_graph, self.ub_graph.T))))
         modification_ratio = self.conf["item_level_ratio"]
         
         # if modification_ratio != 0:
@@ -333,9 +334,9 @@ class CrossCBR(nn.Module):
 
         #  ============================= bundle level propagation =============================
         if test:
-            BL_users_feature, BL_bundles_feature = self.one_propagate(self.bundle_level_graph_ori, self.users_feature, self.bundles_feature, self.bundle_level_dropout, test, self.UB_coefs)
+            BL_users_feature, BL_bundles_feature = self.one_propagate(self.ub_hyper_propagation_graph_ori, self.users_feature, self.bundles_feature, self.bundle_level_dropout, test, self.UB_coefs)
         else:
-            BL_users_feature, BL_bundles_feature = self.one_propagate(self.bundle_level_graph, self.users_feature, self.bundles_feature, self.bundle_level_dropout, test, self.UB_coefs)
+            BL_users_feature, BL_bundles_feature = self.one_propagate(self.ub_hyper_propagation_graph_ori, self.users_feature, self.bundles_feature, self.bundle_level_dropout, test, self.UB_coefs)
 
         users_feature = [fuse_users_feature, BL_users_feature]
         bundles_feature = [fuse_bundles_feature, BL_bundles_feature]
