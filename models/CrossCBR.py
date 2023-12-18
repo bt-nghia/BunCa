@@ -132,7 +132,7 @@ class CrossCBR(nn.Module):
         ub_view = sp.bmat([[self.ub_graph, ubu_graph], 
                            [bub_graph , self.ub_graph.T]])
         
-        modification_ratio = self.conf["item_level_ratio"]
+        modification_ratio = self.conf["bundle_level_ratio"]
         
         if modification_ratio != 0:
             if self.conf["aug_type"] == "ED":
