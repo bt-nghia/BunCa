@@ -116,6 +116,8 @@ class CrossCBR(nn.Module):
 
         self.iui_attn = None
         self.ibi_attn = None
+        self.construct_hyper_graph()
+        
 
     
     def construct_hyper_graph(self, threshold=10):
@@ -127,8 +129,8 @@ class CrossCBR(nn.Module):
 
         # ub_view = sp.vstack((self.ub_graph, bub_graph))
         # ub_view = sp.hstack((ub_view, sp.vstack((ubu_graph, self.ub_graph.T))))
-        ub_view = sp.bmat([[self.ub_graph, bub_graph], 
-                           [ubu_graph , self.ub_graph.T]])
+        ub_view = sp.bmat([[self.ub_graph, ubu_graph], 
+                           [bub_graph , self.ub_graph.T]])
         
         modification_ratio = self.conf["item_level_ratio"]
         
@@ -394,7 +396,6 @@ class CrossCBR(nn.Module):
             self.get_item_level_graph()
             self.get_bundle_level_graph()
             self.get_bundle_agg_graph()
-            self.construct_hyper_graph()
 
         # users: [bs, 1]
         # bundles: [bs, 1+neg_num]
