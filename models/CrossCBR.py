@@ -119,6 +119,21 @@ class CrossCBR(nn.Module):
         self.iui_attn = None
         self.ibi_attn = None
 
+    
+    def construct_hyper_graph(self, threshold=10):
+        ubu_graph = self.ub_graph @ self.ub_graph.T
+        ubu_graph = ubu_graph > threshold
+
+        bub_graph = self.ub_graph.T @ self.ub_graph
+        bub_graph = bub_graph > threshold
+
+        ub_view = sp.stack((self.ub_graph, bub_graph))
+        ub_view = sp.stack((ub_view, sp.vstack((ubu_graph, self.ub_graph.T))))
+        modification_ratio = self.conf["item_level_ratio"]
+        
+        # if modification_ratio != 0:
+        self.ub_hyper_propagation_graph_ori = to_tensor(laplace_transform(ub_view)).to(self.device)
+
 
     def save_asym(self):
         torch.save(self.ibi_attn, "datasets/{}/ibi_attn".format(self.conf["dataset"]))
