@@ -47,6 +47,29 @@ def np_edge_dropout(values, dropout_ratio):
     return values
 
 
+def mix_hypergraph(raw_graph, threshold=10):
+    ub_graph, ui_graph, bi_graph = raw_graph
+
+    uu_graph = ub_graph @ ub_graph.T
+    uu_graph = uu_graph > threshold
+
+    bb_graph = ub_graph.T @ ub_graph
+    bb_graph = bb_graph > threshold
+
+    H = sp.vstack((ui_graph, bi_graph))
+    non_atom_graph = sp.vstack((ub_graph, bb_graph))
+    non_atom_graph = sp.hstack((non_atom_graph, sp.vstack((uu_graph, ub_graph.T))))
+    H = sp.hstack((H, non_atom_graph))
+    return H
+
+
+def normalize_Hyper(H):
+    D_v = sp.diags(1 / (np.sqrt(H.sum(axis=1).A.ravel()) + 1e-8))
+    D_e = sp.diags(1 / (np.sqrt(H.sum(axis=0).A.ravel()) + 1e-8))
+    H_nomalized = D_v @ H @ D_e @ H.T @ D_v
+    return H_nomalized
+
+
 class CrossCBR(nn.Module):
     def __init__(self, conf, raw_graph):
         super().__init__()
@@ -116,31 +139,8 @@ class CrossCBR(nn.Module):
 
         self.iui_attn = None
         self.ibi_attn = None
-        self.construct_hyper_graph()
-        
 
-    
-    def construct_hyper_graph(self, threshold=10):
-        ubu_graph = self.ub_graph @ self.ub_graph.T
-        ubu_graph = ubu_graph > threshold
-
-        bub_graph = self.ub_graph.T @ self.ub_graph
-        bub_graph = bub_graph > threshold
-
-        # ub_view = sp.vstack((self.ub_graph, bub_graph))
-        # ub_view = sp.hstack((ub_view, sp.vstack((ubu_graph, self.ub_graph.T))))
-        ub_view = sp.bmat([[self.ub_graph, ubu_graph], 
-                           [bub_graph , self.ub_graph.T]])
-        
-        modification_ratio = self.conf["bundle_level_ratio"]
-        
-        if modification_ratio != 0:
-            if self.conf["aug_type"] == "ED":
-                graph = ub_view.tocoo()
-                values = np_edge_dropout(graph.data, modification_ratio)
-                ub_view = sp.coo_matrix((values, (graph.row, graph.col)), shape=graph.shape).tocsr()
-
-        self.ub_hyper_propagation_graph_ori = to_tensor(laplace_transform(ub_view)).to(self.device)
+        self.hyper_graph_view = to_tensor(normalize_Hyper(mix_hypergraph(raw_graph))).to(self.device)
 
 
     def save_asym(self):
@@ -341,9 +341,9 @@ class CrossCBR(nn.Module):
 
         #  ============================= bundle level propagation =============================
         if test:
-            BL_users_feature, BL_bundles_feature = self.one_propagate(self.ub_hyper_propagation_graph_ori, self.users_feature, self.bundles_feature, self.bundle_level_dropout, test, self.UB_coefs)
+            BL_users_feature, BL_bundles_feature = self.one_propagate(self.hyper_graph_view, self.users_feature, self.bundles_feature, self.bundle_level_dropout, test, self.UB_coefs)
         else:
-            BL_users_feature, BL_bundles_feature = self.one_propagate(self.ub_hyper_propagation_graph_ori, self.users_feature, self.bundles_feature, self.bundle_level_dropout, test, self.UB_coefs)
+            BL_users_feature, BL_bundles_feature = self.one_propagate(self.hyper_graph_view, self.users_feature, self.bundles_feature, self.bundle_level_dropout, test, self.UB_coefs)
 
         users_feature = [fuse_users_feature, BL_users_feature]
         bundles_feature = [fuse_bundles_feature, BL_bundles_feature]
