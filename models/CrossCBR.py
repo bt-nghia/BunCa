@@ -9,7 +9,7 @@ from gene_ii_co_oc import load_sp_mat
 from models.AsymModule import AsymMatrix
 
 
-def cal_bpr_loss(pred):
+def cal_bpr_loss(pred, alpha=0.2):
     # pred: [bs, 1+neg_num]
     if pred.shape[1] > 2:
         negs = pred[:, 1:]
@@ -18,9 +18,16 @@ def cal_bpr_loss(pred):
         negs = pred[:, 1].unsqueeze(1)
         pos = pred[:, 0].unsqueeze(1)
 
-    loss = - torch.log(torch.sigmoid(pos - negs)) # [bs]
-    loss = torch.mean(loss)
+    # normal bpr loss
+    # loss = - torch.log(torch.sigmoid(pos - negs)) # [bs]
+    # loss = torch.mean(loss)
 
+    # uib loss
+    loss_p = -torch.log(torch.sigmoid(pos))
+    loss_n = -torch.log(torch.sigmoid(-negs))
+    loss = loss_p + alpha * loss_n
+    loss = torch.mean(loss)
+    
     return loss
 
 
