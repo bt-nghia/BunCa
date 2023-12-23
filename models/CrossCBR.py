@@ -175,11 +175,11 @@ class CrossCBR(nn.Module):
         self.item_level_graph_ori = to_tensor(laplace_transform(item_level_graph)).to(device)
 
 
-    def get_bundle_level_graph(self, threshold=4):
+    def get_bundle_level_graph(self, threshold=2):
         '''
         best threshold
         Youshu : 6
-        NetEase : 20
+        NetEase : 2
         iFashion: 4
         i set same threshold for bundle and user but it can diff
         '''
