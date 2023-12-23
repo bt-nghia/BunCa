@@ -199,7 +199,7 @@ class CrossCBR(nn.Module):
         self.item_level_graph_ori = to_tensor(laplace_transform(item_level_graph)).to(device)
 
 
-    def get_bundle_level_graph(self, threshold=6):
+    def get_bundle_level_graph(self, threshold=3):
         '''
         Youshu threshold: 4
         NetEase threshold: 20
