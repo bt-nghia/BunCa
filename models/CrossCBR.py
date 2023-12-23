@@ -19,14 +19,14 @@ def cal_bpr_loss(pred, alpha=0.2):
         pos = pred[:, 0].unsqueeze(1)
 
     # normal bpr loss
-    # loss = - torch.log(torch.sigmoid(pos - negs)) # [bs]
-    # loss = torch.mean(loss)
+    loss = - torch.log(torch.sigmoid(pos - negs)) # [bs]
+    loss = torch.mean(loss)
 
     # uib loss
-    loss_p = -torch.log(torch.sigmoid(pos))
-    loss_n = -torch.log(torch.sigmoid(-negs))
-    loss = loss_p + alpha * loss_n
-    loss = torch.mean(loss)
+    # loss_p = -torch.log(torch.sigmoid(pos))
+    # loss_n = -torch.log(torch.sigmoid(-negs))
+    # loss = loss_p + alpha * loss_n
+    # loss = torch.mean(loss)
     
     return loss
 
@@ -147,8 +147,6 @@ class CrossCBR(nn.Module):
         self.iui_attn = None
         self.ibi_attn = None
 
-        self.hyper_graph_view = to_tensor(normalize_Hyper(mix_hypergraph(raw_graph))).to(self.device)
-
 
     def save_asym(self):
         torch.save(self.ibi_attn, "datasets/{}/ibi_attn".format(self.conf["dataset"]))
@@ -201,12 +199,28 @@ class CrossCBR(nn.Module):
         self.item_level_graph_ori = to_tensor(laplace_transform(item_level_graph)).to(device)
 
 
-    def get_bundle_level_graph(self):
+    def get_bundle_level_graph(self, threshold=6):
+        '''
+        Youshu threshold: 4
+        NetEase threshold: 20
+        '''
         ub_graph = self.ub_graph
         device = self.device
         modification_ratio = self.conf["bundle_level_ratio"]
 
-        bundle_level_graph = sp.bmat([[sp.csr_matrix((ub_graph.shape[0], ub_graph.shape[0])), ub_graph], [ub_graph.T, sp.csr_matrix((ub_graph.shape[1], ub_graph.shape[1]))]])
+        # using bundle level graph
+        uu_graph = (ub_graph @ ub_graph.T) > threshold
+        bb_graph = (ub_graph.T @ ub_graph) > threshold
+
+        # using item level graph
+        # uu_graph = (self.ui_graph @ self.ui_graph.T) > threshold
+        # bb_graph = (self.bi_graph @ self.bi_graph.T) > threshold
+
+        # bundle_level_graph = sp.bmat([[sp.csr_matrix((ub_graph.shape[0], ub_graph.shape[0])), ub_graph], 
+        #                               [ub_graph.T, sp.csr_matrix((ub_graph.shape[1], ub_graph.shape[1]))]])
+
+        bundle_level_graph = sp.bmat([[uu_graph, ub_graph],
+                                      [ub_graph.T, bb_graph]])
 
         if modification_ratio != 0:
             if self.conf["aug_type"] == "ED":
@@ -348,9 +362,9 @@ class CrossCBR(nn.Module):
 
         #  ============================= bundle level propagation =============================
         if test:
-            BL_users_feature, BL_bundles_feature = self.one_propagate(self.hyper_graph_view, self.users_feature, self.bundles_feature, self.bundle_level_dropout, test, self.UB_coefs)
+            BL_users_feature, BL_bundles_feature = self.one_propagate(self.bundle_level_graph_ori, self.users_feature, self.bundles_feature, self.bundle_level_dropout, test, self.UB_coefs)
         else:
-            BL_users_feature, BL_bundles_feature = self.one_propagate(self.hyper_graph_view, self.users_feature, self.bundles_feature, self.bundle_level_dropout, test, self.UB_coefs)
+            BL_users_feature, BL_bundles_feature = self.one_propagate(self.bundle_level_graph, self.users_feature, self.bundles_feature, self.bundle_level_dropout, test, self.UB_coefs)
 
         users_feature = [fuse_users_feature, BL_users_feature]
         bundles_feature = [fuse_bundles_feature, BL_bundles_feature]
