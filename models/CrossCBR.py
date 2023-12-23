@@ -111,7 +111,7 @@ class CrossCBR(nn.Module):
 
         # generate the graph without any dropouts for testing
         self.get_item_level_graph_ori()
-        self.get_bundle_level_graph_ori()
+        # self.get_bundle_level_graph_ori()
         self.get_bundle_agg_graph_ori()
         self.get_user_agg_graph_ori()
 
@@ -203,6 +203,7 @@ class CrossCBR(nn.Module):
         '''
         Youshu threshold: 4
         NetEase threshold: 20
+        iFashion: 3
         '''
         ub_graph = self.ub_graph
         device = self.device
@@ -221,6 +222,8 @@ class CrossCBR(nn.Module):
 
         bundle_level_graph = sp.bmat([[uu_graph, ub_graph],
                                       [ub_graph.T, bb_graph]])
+        
+        self.bundle_level_graph_ori = to_tensor(laplace_transform(bundle_level_graph)).to(device)
 
         if modification_ratio != 0:
             if self.conf["aug_type"] == "ED":
