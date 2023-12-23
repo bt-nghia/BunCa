@@ -234,11 +234,12 @@ class CrossCBR(nn.Module):
         self.bundle_level_graph = to_tensor(laplace_transform(bundle_level_graph)).to(device)
 
 
-    def get_bundle_level_graph_ori(self):
-        ub_graph = self.ub_graph
-        device = self.device
-        bundle_level_graph = sp.bmat([[sp.csr_matrix((ub_graph.shape[0], ub_graph.shape[0])), ub_graph], [ub_graph.T, sp.csr_matrix((ub_graph.shape[1], ub_graph.shape[1]))]])
-        self.bundle_level_graph_ori = to_tensor(laplace_transform(bundle_level_graph)).to(device)
+    # def get_bundle_level_graph_ori(self):
+    #     print("in old")
+    #     ub_graph = self.ub_graph
+    #     device = self.device
+    #     bundle_level_graph = sp.bmat([[sp.csr_matrix((ub_graph.shape[0], ub_graph.shape[0])), ub_graph], [ub_graph.T, sp.csr_matrix((ub_graph.shape[1], ub_graph.shape[1]))]])
+    #     self.bundle_level_graph_ori = to_tensor(laplace_transform(bundle_level_graph)).to(device)
 
 
     def get_bundle_agg_graph(self):
