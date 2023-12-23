@@ -403,8 +403,10 @@ class CrossCBR(nn.Module):
 
         u_cross_view_cl = self.cal_c_loss(IL_users_feature, BL_users_feature)
         b_cross_view_cl = self.cal_c_loss(IL_bundles_feature, BL_bundles_feature)
+        u_native_view_cl = self.cal_c_loss(IL_users_feature + BL_users_feature, IL_users_feature + BL_users_feature)
+        b_native_view_cl = self.cal_c_loss(IL_bundles_feature + BL_bundles_feature, IL_bundles_feature + BL_bundles_feature)
 
-        c_losses = [u_cross_view_cl, b_cross_view_cl]
+        c_losses = [u_cross_view_cl, b_cross_view_cl, u_native_view_cl, b_native_view_cl]
 
         c_loss = sum(c_losses) / len(c_losses)
 
