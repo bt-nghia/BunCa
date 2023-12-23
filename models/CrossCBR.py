@@ -201,9 +201,11 @@ class CrossCBR(nn.Module):
 
     def get_bundle_level_graph(self, threshold=4):
         '''
-        Youshu threshold: 4
-        NetEase threshold: 20
-        iFashion: 3
+        best threshold
+        Youshu : 6
+        NetEase : 20
+        iFashion: 4
+        i set same threshold for bundle and user but it can diff
         '''
         ub_graph = self.ub_graph
         device = self.device
