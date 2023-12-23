@@ -54,29 +54,6 @@ def np_edge_dropout(values, dropout_ratio):
     return values
 
 
-def mix_hypergraph(raw_graph, threshold=10):
-    ub_graph, ui_graph, bi_graph = raw_graph
-
-    uu_graph = ub_graph @ ub_graph.T
-    uu_graph = uu_graph > threshold
-
-    bb_graph = ub_graph.T @ ub_graph
-    bb_graph = bb_graph > threshold
-
-    H = sp.vstack((ui_graph, bi_graph))
-    non_atom_graph = sp.vstack((ub_graph, bb_graph))
-    non_atom_graph = sp.hstack((non_atom_graph, sp.vstack((uu_graph, ub_graph.T))))
-    H = sp.hstack((H, non_atom_graph))
-    return H
-
-
-def normalize_Hyper(H):
-    D_v = sp.diags(1 / (np.sqrt(H.sum(axis=1).A.ravel()) + 1e-8))
-    D_e = sp.diags(1 / (np.sqrt(H.sum(axis=0).A.ravel()) + 1e-8))
-    H_nomalized = D_v @ H @ D_e @ H.T @ D_v
-    return H_nomalized
-
-
 class CrossCBR(nn.Module):
     def __init__(self, conf, raw_graph):
         super().__init__()
@@ -111,7 +88,6 @@ class CrossCBR(nn.Module):
 
         # generate the graph without any dropouts for testing
         self.get_item_level_graph_ori()
-        # self.get_bundle_level_graph_ori()
         self.get_bundle_agg_graph_ori()
         self.get_user_agg_graph_ori()
 
@@ -215,13 +191,6 @@ class CrossCBR(nn.Module):
         uu_graph = (ub_graph @ ub_graph.T) > threshold
         bb_graph = (ub_graph.T @ ub_graph) > threshold
 
-        # using item level graph
-        # uu_graph = (self.ui_graph @ self.ui_graph.T) > threshold
-        # bb_graph = (self.bi_graph @ self.bi_graph.T) > threshold
-
-        # bundle_level_graph = sp.bmat([[sp.csr_matrix((ub_graph.shape[0], ub_graph.shape[0])), ub_graph], 
-        #                               [ub_graph.T, sp.csr_matrix((ub_graph.shape[1], ub_graph.shape[1]))]])
-
         bundle_level_graph = sp.bmat([[uu_graph, ub_graph],
                                       [ub_graph.T, bb_graph]])
         
@@ -234,14 +203,6 @@ class CrossCBR(nn.Module):
                 bundle_level_graph = sp.coo_matrix((values, (graph.row, graph.col)), shape=graph.shape).tocsr()
 
         self.bundle_level_graph = to_tensor(laplace_transform(bundle_level_graph)).to(device)
-
-
-    # def get_bundle_level_graph_ori(self):
-    #     print("in old")
-    #     ub_graph = self.ub_graph
-    #     device = self.device
-    #     bundle_level_graph = sp.bmat([[sp.csr_matrix((ub_graph.shape[0], ub_graph.shape[0])), ub_graph], [ub_graph.T, sp.csr_matrix((ub_graph.shape[1], ub_graph.shape[1]))]])
-    #     self.bundle_level_graph_ori = to_tensor(laplace_transform(bundle_level_graph)).to(device)
 
 
     def get_bundle_agg_graph(self):
