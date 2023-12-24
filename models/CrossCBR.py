@@ -375,7 +375,8 @@ class CrossCBR(nn.Module):
 
         c_losses = [u_cross_view_cl, b_cross_view_cl, u_native_view_cl, b_native_view_cl]
 
-        c_loss = sum(c_losses) / len(c_losses)
+        # c_loss = sum(c_losses) / len(c_losses)
+        c_loss = (0.3 * u_cross_view_cl + 0.3 * b_cross_view_cl + 0.2 * u_native_view_cl + 0.2 * b_native_view_cl)
 
         return bpr_loss, c_loss
 
