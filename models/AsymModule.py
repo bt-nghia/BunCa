@@ -137,8 +137,7 @@ class AsymMatrix(MessagePassing):
                 index: Tensor, ptr: OptTensor,
                 size_i: Optional[int]) -> Tensor:
         x = x_i + x_j
-        # x = F.leaky_relu(x, self.negative_slope)
-        x = F.sigmoid(x)
+        x = F.leaky_relu(x, self.negative_slope)
         alpha = (x * self.att).sum(dim=-1)
         alpha = softmax(alpha, index, ptr, size_i)
         self._alpha = alpha
