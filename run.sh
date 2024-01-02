@@ -3,6 +3,10 @@
 # ibi filtered edge ~ 1-2% edges in ibi
 # we not tuning much you can tuning this coeficients to get better results
 
+# iFashion
+python gene_ii_co_oc.py -d iFashion
+python preProcess.py -d iFashion -iui 15 -ibi 2
+python train.py -d iFashion -w3 0.8 -w4 0.8 -sw 0.9 -nw 0.1
 
 # Youshu
 python gene_ii_co_oc.py -d Youshu

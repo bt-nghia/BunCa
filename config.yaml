@@ -18,7 +18,6 @@ Youshu:
   c_temps: [0.25] # the temperature in the contrastive loss: tau
   self_loop: False
   epochs: 200
-  UI_layers: [0.7, 0.3]
   seed: 2023
   UB_coefs: [1, 1]
   UI_coefs: [1, 1]
@@ -49,7 +48,6 @@ NetEase:
   c_temps: [0.25]
   epochs: 100
   topk_valid: 20
-  UI_layers: [0.7, 0.3]
   seed: 2023
   UB_coefs: [1, 1]
   UI_coefs: [1, 1]
@@ -58,7 +56,7 @@ NetEase:
   file_type: ".txt"
   topk_valid: 20
   nhead: 2
-  extra_layer: True #Fasle
+  extra_layer: True
 
 
 iFashion:
@@ -81,7 +79,6 @@ iFashion:
   c_temps: [0.2]
   epochs: 100
   topk_valid: 20
-  UI_layers: [0.7, 0.3]
   seed: 2023
   UB_coefs: [1, 1]
   UI_coefs: [1, 1]
@@ -90,140 +87,4 @@ iFashion:
   file_type: ".txt"
   topk_valid: 20
   nhead: 2
-  extra_layer: True #False
-
-
-# ------------------- amazon datasets ---------------------
-food:
-  data_path: './datasets'
-  batch_size_train: 128 
-  batch_size_test: 128 
-  topk: [1, 2, 3, 4, 5]
-  neg_num: 1 
-  aug_type: "ED" 
-  ed_interval: 1 
-  embedding_sizes: [64] 
-  num_layerss: [1] 
-  item_level_ratios: [0.2]
-  bundle_level_ratios: [0.2] 
-  bundle_agg_ratios: [0.2] 
-  self_loop: False
-  lrs: [1.0e-3] 
-  l2_regs: [1.0e-4] 
-  c_lambdas: [0.01] 
-  c_temps: [0.25] 
-  epochs: 30
-  UI_layers: [0.7, 0.3]
-  seed: 2023
-  UB_coefs: [1, 1]
-  UI_coefs: [1, 1]
-  BI_coefs: [1, 1]
-  sep: "\t"
-  file_type: ".txt"
-  topk_valid: 3
-  nhead: 3
   extra_layer: True
-
-# !python gene_ii_co_oc.py -d food
-# !python preProcess.py -d food -ibi 2 -iui 4
-# !python train.py -d food -w3 0.1 -w4 0.1 -sw 0.9 -nw 0.8
-# 2023-11-26 13:08:03, Best in epoch 10, TOP 1: REC_V=0.39908, NDCG_V=0.39908
-# 2023-11-26 13:08:03, Best in epoch 10, TOP 1: REC_T=0.49541, NDCG_T=0.49541
-# 2023-11-26 13:08:03, Best in epoch 10, TOP 2: REC_V=0.79358, NDCG_V=0.64798
-# 2023-11-26 13:08:03, Best in epoch 10, TOP 2: REC_T=0.83945, NDCG_T=0.71248
-# 2023-11-26 13:08:03, Best in epoch 10, TOP 3: REC_V=0.87615, NDCG_V=0.68927
-# 2023-11-26 13:08:03, Best in epoch 10, TOP 3: REC_T=0.89450, NDCG_T=0.74000
-# 2023-11-26 13:08:03, Best in epoch 10, TOP 4: REC_V=0.90826, NDCG_V=0.70309
-# 2023-11-26 13:08:03, Best in epoch 10, TOP 4: REC_T=0.93119, NDCG_T=0.75580
-# 2023-11-26 13:08:03, Best in epoch 10, TOP 5: REC_V=0.92661, NDCG_V=0.71019
-# 2023-11-26 13:08:03, Best in epoch 10, TOP 5: REC_T=0.95872, NDCG_T=0.76645
-
-electronic:
-  data_path: './datasets'
-  batch_size_train: 128 
-  batch_size_test: 128 
-  topk: [1, 2, 3, 4, 5]
-  neg_num: 1 
-  aug_type: "ED" 
-  ed_interval: 1 
-  embedding_sizes: [64] 
-  num_layerss: [1] 
-  item_level_ratios: [0.2]
-  bundle_level_ratios: [0.2] 
-  bundle_agg_ratios: [0.2] 
-  self_loop: False
-  lrs: [1.0e-3] 
-  l2_regs: [1.0e-4] 
-  c_lambdas: [0.01] 
-  c_temps: [0.25] 
-  epochs: 20
-  UI_layers: [0.7, 0.3]
-  seed: 2023
-  UB_coefs: [1, 1]
-  UI_coefs: [1, 1]
-  BI_coefs: [1, 1]
-  sep: "\t"
-  topk_valid: 3
-  file_type: ".txt"
-  nhead: 1
-  extra_layer: True
-
-# !python gene_ii_co_oc.py -d electronic
-# !python preProcess.py -d electronic -iui 4 -ibi 2
-# !python train.py -d electronic -w3 0.1 -w4 0.1 -sw 0.9 -nw 0.7
-# 2023-11-26 13:32:41, Best in epoch 11, TOP 1: REC_V=0.35514, NDCG_V=0.35514
-# 2023-11-26 13:32:41, Best in epoch 11, TOP 1: REC_T=0.46729, NDCG_T=0.46729
-# 2023-11-26 13:32:41, Best in epoch 11, TOP 2: REC_V=0.74766, NDCG_V=0.60279
-# 2023-11-26 13:32:41, Best in epoch 11, TOP 2: REC_T=0.78037, NDCG_T=0.66482
-# 2023-11-26 13:32:41, Best in epoch 11, TOP 3: REC_V=0.86916, NDCG_V=0.66354
-# 2023-11-26 13:32:41, Best in epoch 11, TOP 3: REC_T=0.86449, NDCG_T=0.70688
-# 2023-11-26 13:32:41, Best in epoch 11, TOP 4: REC_V=0.90187, NDCG_V=0.67763
-# 2023-11-26 13:32:41, Best in epoch 11, TOP 4: REC_T=0.90654, NDCG_T=0.72499
-# 2023-11-26 13:32:41, Best in epoch 11, TOP 5: REC_V=0.92056, NDCG_V=0.68486
-# 2023-11-26 13:32:41, Best in epoch 11, TOP 5: REC_T=0.92056, NDCG_T=0.73042
-
-
-clothing:
-  data_path: './datasets'
-  batch_size_train: 128 
-  batch_size_test: 128 
-  topk: [1, 2, 3, 4, 5]
-  neg_num: 1 
-  aug_type: "ED" 
-  ed_interval: 1 
-  embedding_sizes: [64] 
-  num_layerss: [1] 
-  item_level_ratios: [0.2]
-  bundle_level_ratios: [0.2] 
-  bundle_agg_ratios: [0.2] 
-  self_loop: False
-  lrs: [1.0e-3] 
-  l2_regs: [1.0e-4] 
-  c_lambdas: [0.01] 
-  c_temps: [0.25] 
-  epochs: 10
-  UI_layers: [0.7, 0.3]
-  seed: 2023
-  UB_coefs: [1, 1]
-  UI_coefs: [1, 1]
-  BI_coefs: [1, 1]
-  sep: "\t"
-  file_type: ".txt"
-  topk_valid: 3
-  nhead: 3
-  extra_layer: True
-
-
-# !python gene_ii_co_oc.py -d clothing
-# !python preProcess.py -d clothing -ibi 2 -iui 4
-# !python train.py -d clothing -w3 0.1 -w4 0.1 -sw 0.9 -nw 0.1
-# 2023-11-26 12:36:44, Best in epoch 6, TOP 1: REC_V=0.47325, NDCG_V=0.47325
-# 2023-11-26 12:36:44, Best in epoch 6, TOP 1: REC_T=0.50206, NDCG_T=0.50206
-# 2023-11-26 12:36:44, Best in epoch 6, TOP 2: REC_V=0.95885, NDCG_V=0.77963
-# 2023-11-26 12:36:44, Best in epoch 6, TOP 2: REC_T=0.94239, NDCG_T=0.77987
-# 2023-11-26 12:36:44, Best in epoch 6, TOP 3: REC_V=0.99177, NDCG_V=0.79609
-# 2023-11-26 12:36:44, Best in epoch 6, TOP 3: REC_T=0.97119, NDCG_T=0.79428
-# 2023-11-26 12:36:44, Best in epoch 6, TOP 4: REC_V=0.99588, NDCG_V=0.79786
-# 2023-11-26 12:36:44, Best in epoch 6, TOP 4: REC_T=0.98354, NDCG_T=0.79959
-# 2023-11-26 12:36:44, Best in epoch 6, TOP 5: REC_V=1.00000, NDCG_V=0.79945
-# 2023-11-26 12:36:44, Best in epoch 6, TOP 5: REC_T=0.98765, NDCG_T=0.80119

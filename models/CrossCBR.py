@@ -120,14 +120,6 @@ class CrossCBR(nn.Module):
         self.iui_gat_conv = Amatrix(in_dim=64, out_dim=64, n_layer=1, dropout=0.1, heads=self.n_head, concat=False, self_loop=self.a_self_loop, extra_layer=self.extra_layer)
         self.ibi_gat_conv = Amatrix(in_dim=64, out_dim=64, n_layer=1, dropout=0.1, heads=self.n_head, concat=False, self_loop=self.a_self_loop, extra_layer=self.extra_layer)
 
-        self.iui_attn = None
-        self.ibi_attn = None
-
-
-    def save_asym(self):
-        torch.save(self.ibi_attn, "datasets/{}/ibi_attn".format(self.conf["dataset"]))
-        torch.save(self.iui_attn, "datasets/{}/iui_attn".format(self.conf["dataset"]))
-
 
     def init_md_dropouts(self):
         self.item_level_dropout = nn.Dropout(self.conf["item_level_ratio"], True)
@@ -175,7 +167,7 @@ class CrossCBR(nn.Module):
         self.item_level_graph_ori = to_tensor(laplace_transform(item_level_graph)).to(device)
 
 
-    def get_bundle_level_graph(self, threshold=2):
+    def get_bundle_level_graph(self, threshold=4):
         '''
         best threshold
         Youshu : 6
@@ -302,7 +294,7 @@ class CrossCBR(nn.Module):
     def propagate(self, test=False):
         #  =============================  item level propagation  =============================
         #  ======== UI =================
-        IL_items_feat, self.iui_attn = self.iui_gat_conv(self.items_feature, self.iui_edge_index, return_attention_weights=True) 
+        IL_items_feat, _ = self.iui_gat_conv(self.items_feature, self.iui_edge_index, return_attention_weights=True) 
         IL_items_feat = IL_items_feat * self.nw + self.items_feature * self.sw
         if test:
             IL_users_feature, IL_items_feature = self.one_propagate(self.item_level_graph_ori, self.users_feature, IL_items_feat, self.item_level_dropout, test, self.UI_coefs)
@@ -313,7 +305,7 @@ class CrossCBR(nn.Module):
         IL_bundles_feature = self.get_IL_bundle_rep(IL_items_feature, test)
 
         # ========== BI ================
-        IL_items_feat2, self.ibi_attn = self.ibi_gat_conv(self.items_feature, self.ibi_edge_index, return_attention_weights=True) 
+        IL_items_feat2, _ = self.ibi_gat_conv(self.items_feature, self.ibi_edge_index, return_attention_weights=True) 
         IL_items_feat2 = IL_items_feat2 * self.nw + self.items_feature * self.sw
         if test:
             BIL_bundles_feature, IL_items_feature2 = self.one_propagate(self.bi_propagate_graph_ori, self.bundles_feature, IL_items_feat2, self.item_level_dropout, test, self.BI_coefs)
@@ -375,8 +367,8 @@ class CrossCBR(nn.Module):
 
         c_losses = [u_cross_view_cl, b_cross_view_cl, u_native_view_cl, b_native_view_cl]
 
-        # c_loss = sum(c_losses) / len(c_losses)
-        c_loss = (0.3 * u_cross_view_cl + 0.3 * b_cross_view_cl + 0.2 * u_native_view_cl + 0.2 * b_native_view_cl)
+        c_loss = sum(c_losses) / len(c_losses)
+        # c_loss = (0.3 * u_cross_view_cl + 0.3 * b_cross_view_cl + 0.2 * u_native_view_cl + 0.2 * b_native_view_cl)
 
         return bpr_loss, c_loss
 
