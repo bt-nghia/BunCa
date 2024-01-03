@@ -1,8 +1,3 @@
-# we choose w3 w4 base on % edges in asymmatrix
-# iui filtered edges >= 20% edges in iui
-# ibi filtered edge ~ 1-2% edges in ibi
-# we not tuning much you can tuning this coeficients to get better results
-
 # iFashion
 python gene_ii_co_oc.py -d iFashion
 python preProcess.py -d iFashion -iui 15 -ibi 2

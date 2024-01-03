@@ -28,6 +28,7 @@ Youshu:
   contrast_weight: [0.5, 0.5, 0.0, 0.0]
   extra_layer: True
 
+
 NetEase:
   data_path: './datasets'
   batch_size_train: 2048
