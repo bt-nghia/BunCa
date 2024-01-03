@@ -71,6 +71,7 @@ class CrossCBR(nn.Module):
         self.w2 = conf["w2"]
         self.w3 = conf["w3"]
         self.w4 = conf["w4"]
+        self.contrast_weight = conf['contrast_weight']
         self.extra_layer = conf["extra_layer"]
 
         self.init_emb()
@@ -167,7 +168,7 @@ class CrossCBR(nn.Module):
         self.item_level_graph_ori = to_tensor(laplace_transform(item_level_graph)).to(device)
 
 
-    def get_bundle_level_graph(self, threshold=4):
+    def get_bundle_level_graph(self, threshold=10000):
         '''
         best threshold
         Youshu : 6
@@ -364,11 +365,11 @@ class CrossCBR(nn.Module):
         b_cross_view_cl = self.cal_c_loss(IL_bundles_feature, BL_bundles_feature)
         u_native_view_cl = self.cal_c_loss(IL_users_feature + BL_users_feature, IL_users_feature + BL_users_feature)
         b_native_view_cl = self.cal_c_loss(IL_bundles_feature + BL_bundles_feature, IL_bundles_feature + BL_bundles_feature)
-
+        
         c_losses = [u_cross_view_cl, b_cross_view_cl, u_native_view_cl, b_native_view_cl]
-
-        c_loss = sum(c_losses) / len(c_losses)
-        # c_loss = (0.3 * u_cross_view_cl + 0.3 * b_cross_view_cl + 0.2 * u_native_view_cl + 0.2 * b_native_view_cl)
+        c_loss = 0
+        for i in range(0, 4):
+            c_loss+=c_losses[i] * self.contrast_weight[i]
 
         return bpr_loss, c_loss
 
