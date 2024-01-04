@@ -14,6 +14,8 @@
 python gene_ii_co_oc.py -d NetEase
 python preProcess.py -d NetEase -ibi 10 -iui 9
 python train.py -d NetEase -w1 0.8 -w2 0.8 -w3 0.8 -w4 0.8
+python train.py -d NetEase -w1 0.6 -w2 0.6 -w3 0.8 -w4 0.8
+
 # python train.py -d NetEase -w3 0 -w4 0
 
 
