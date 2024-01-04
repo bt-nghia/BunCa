@@ -1,8 +1,8 @@
 # iFashion
 python gene_ii_co_oc.py -d iFashion
 python preProcess.py -d iFashion -iui 15 -ibi 2
-python train.py -d iFashion -w3 1 -w4 1 -sw 0.9 -nw 0.1
-python train.py -d iFashion -w3 0 -w4 0 -sw 0.9 -nw 0.1
+python train.py -d iFashion -w1 0.8 -w2 0.8 -w3 1 -w4 1 -sw 0.9 -nw 0.1
+python train.py -d iFashion -w1 0.6 -w2 0.6 -w3 1 -w4 1 -sw 0.9 -nw 0.1
 
 
 # Youshu
@@ -11,10 +11,10 @@ python train.py -d iFashion -w3 0 -w4 0 -sw 0.9 -nw 0.1
 # python train.py -d Youshu -w3 1 -w4 1
 
 # NetEase
-python gene_ii_co_oc.py -d NetEase
-python preProcess.py -d NetEase -ibi 10 -iui 9
-python train.py -d NetEase -w3 1 -w4 1
-python train.py -d NetEase -w3 0 -w4 0
+# python gene_ii_co_oc.py -d NetEase
+# python preProcess.py -d NetEase -ibi 10 -iui 9
+# python train.py -d NetEase -w3 1 -w4 1
+# python train.py -d NetEase -w3 0 -w4 0
 
 
 # # clothing
