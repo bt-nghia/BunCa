@@ -16,7 +16,7 @@ Youshu:
   c_lambdas: [0.04]
   c_temps: [0.25] # tau
   self_loop: False
-  epochs: 200
+  epochs: 100
   seed: 2023
   UB_coefs: [1, 1]
   UI_coefs: [1, 1]
