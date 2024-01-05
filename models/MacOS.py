@@ -54,7 +54,7 @@ def np_edge_dropout(values, dropout_ratio):
     return values
 
 
-class CrossCBR(nn.Module):
+class MacOS(nn.Module):
     def __init__(self, conf, raw_graph):
         super().__init__()
         self.conf = conf
@@ -167,7 +167,7 @@ class CrossCBR(nn.Module):
         self.item_level_graph_ori = to_tensor(laplace_transform(item_level_graph)).to(device)
 
 
-    def get_bundle_level_graph(self, threshold=2):
+    def get_bundle_level_graph(self, threshold=1000):
         '''
         best threshold
         Youshu : 10000
