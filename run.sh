@@ -13,7 +13,7 @@ python train.py -d Youshu -w1 1 -w2 1 -w3 1 -w4 1 -sw 0 -nw 1
 # NetEase
 python gene_ii_co_oc.py -d NetEase
 python preProcess.py -d NetEase -ibi 10 -iui 9
-python train.py -d NetEase -w3 0.8 -w4 0.8
+python train.py -d NetEase -w1 1 -w2 1 -w3 0.8 -w4 0.8 -sw 0 -nw 1
 
 
 # # clothing
