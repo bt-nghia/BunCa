@@ -59,8 +59,8 @@ def main():
     conf["num_users"] = dataset.num_users
     conf["num_bundles"] = dataset.num_bundles
     conf["num_items"] = dataset.num_items
-    conf["w1"] = paras["weightovl"]
-    conf["w2"] = paras["weightnonovl"]
+    conf["w1"] = paras["weight_user_UB"]
+    conf["w2"] = paras["weight_bundle_UB"]
     conf["w3"] = paras["UIweight"]
     conf["w4"] = paras["BIweight"]
     conf["sw"] = paras["sweight"]

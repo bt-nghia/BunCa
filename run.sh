@@ -7,7 +7,7 @@ python train.py -d iFashion -w1 0.6 -w2 0.6 -w3 1 -w4 1 -sw 0.9 -nw 0.1
 # Youshu
 python gene_ii_co_oc.py -d Youshu
 python preProcess.py -d Youshu -ibi 4 -iui 4
-python train.py -d Youshu -w1 1 -w2 1 -w3 1 -w4 1 -sw 0 -nw 1
+python train.py -d Youshu -w1 1 -w2 1 -w3 0.9 -w4 0.9 -sw 0 -nw 1
 
 
 # NetEase
