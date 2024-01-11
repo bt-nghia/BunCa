@@ -54,7 +54,7 @@ def np_edge_dropout(values, dropout_ratio):
     return values
 
 
-class MacOS(nn.Module):
+class BunCa(nn.Module):
     def __init__(self, conf, raw_graph):
         super().__init__()
         self.conf = conf
@@ -73,6 +73,7 @@ class MacOS(nn.Module):
         self.w4 = conf["w4"]
         self.contrast_weight = conf['contrast_weight']
         self.extra_layer = conf["extra_layer"]
+        self.hyper_threshold = conf["hyperth"]
 
         self.init_emb()
 
@@ -93,7 +94,7 @@ class MacOS(nn.Module):
 
         # generate the graph with the configured dropouts for training, if aug_type is OP or MD, the following graphs with be identical with the aboves
         self.get_item_level_graph()
-        self.get_bundle_level_graph()
+        self.get_bundle_level_graph(threshold=self.hyper_threshold)
         self.get_bundle_agg_graph()
         self.get_user_agg_graph()
 
@@ -167,12 +168,8 @@ class MacOS(nn.Module):
         self.item_level_graph_ori = to_tensor(laplace_transform(item_level_graph)).to(device)
 
 
-    def get_bundle_level_graph(self, threshold=1000):
+    def get_bundle_level_graph(self, threshold):
         '''
-        best threshold
-        Youshu : 10000
-        NetEase : 2
-        iFashion: 4
         i set same threshold for bundle and user but it can diff
         '''
         ub_graph = self.ub_graph
@@ -380,7 +377,7 @@ class MacOS(nn.Module):
         # the edge drop can be performed by every batch or epoch, should be controlled in the train loop
         if ED_drop:
             self.get_item_level_graph()
-            self.get_bundle_level_graph()
+            self.get_bundle_level_graph(self.hyper_threshold)
             self.get_bundle_agg_graph()
 
         # users: [bs, 1]

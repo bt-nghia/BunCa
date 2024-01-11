@@ -13,7 +13,7 @@ from torch.utils.tensorboard import SummaryWriter
 import torch
 import torch.optim as optim
 from utility import Datasets
-from models.MacOS import MacOS
+from models.BunCa import BunCa
 import numpy as np
 
 
@@ -22,7 +22,7 @@ def get_cmd():
     # experimental settings
     parser.add_argument("-g", "--gpu", default="0", type=str, help="which gpu to use")
     parser.add_argument("-d", "--dataset", default="Youshu", type=str, help="which dataset to use, options: NetEase, Youshu, iFashion")
-    parser.add_argument("-m", "--model", default="MacOS", type=str, help="which model to use, options: CrossCBR")
+    parser.add_argument("-m", "--model", default="BunCa", type=str, help="which model to use, options: CrossCBR")
     parser.add_argument("-i", "--info", default="", type=str, help="any auxilary info that will be appended to the log file name")
     parser.add_argument("-w1", "--weight_user_UB", default="1", type=float, help="weight of ovl edges")
     parser.add_argument("-w2", "--weight_bundle_UB", default="1", type=float, help="weight of non ovl edges")
@@ -43,7 +43,7 @@ def main():
     paras = get_cmd().__dict__
     dataset_name = paras["dataset"]
 
-    assert paras["model"] in ["MacOS"], "Pls select models from: MacOS"
+    assert paras["model"] in ["BunCa"], "Pls select models from: BunCa"
 
     if "_" in dataset_name:
         conf = conf[dataset_name.split("_")[0]]
@@ -127,8 +127,8 @@ def main():
         run = SummaryWriter(run_path)
 
         # model
-        if conf['model'] == 'MacOS':
-            model = MacOS(conf, dataset.graphs).to(device)
+        if conf['model'] == 'BunCa':
+            model = BunCa(conf, dataset.graphs).to(device)
         else:
             raise ValueError("Unimplemented model %s" %(conf["model"]))
 
