@@ -91,6 +91,6 @@ iFashion:
   sep: "\t"
   file_type: ".txt"
   topk_valid: 20
-  nhead: 2
+  nhead: 5
   contrast_weight: [0.25, 0.25, 0.25, 0.25]
   extra_layer: True
