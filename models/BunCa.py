@@ -82,11 +82,6 @@ class BunCa(nn.Module):
 
         self.ubi_graph = self.ub_graph @ self.bi_graph
 
-        self.ovl_ui = self.ubi_graph.tocsr().multiply(self.ui_graph.tocsr())
-        self.ovl_ui = self.ovl_ui > 0
-        self.non_ovl_ui = self.ui_graph - self.ovl_ui
-        self.ui_graph = self.ovl_ui * self.w1 + self.non_ovl_ui * self.w2
-
         # generate the graph without any dropouts for testing
         self.get_item_level_graph_ori()
         self.get_bundle_agg_graph_ori()
