@@ -13,7 +13,7 @@
 # NetEase
 python gene_ii_co_oc.py -d NetEase
 python preProcess.py -d NetEase -ibi 10 -iui 9
-python train.py -d NetEase -w1 1 -w2 1 -w3 0.8 -w4 0.8 -sw 0.8 -nw 0.2
+python train.py -d NetEase -w1 1 -w2 1 -w3 0.8 -w4 0.8 -sw 0 -nw 1
 
 
 # # clothing
