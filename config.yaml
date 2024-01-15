@@ -1,3 +1,4 @@
+# Youshu: T4, iFashion, NetEase: P100
 Youshu:
   data_path: './datasets'
   batch_size_train: 2048
@@ -81,7 +82,7 @@ iFashion:
   self_loop: False
   c_lambdas: [0.25]
   c_temps: [0.2]
-  epochs: 50
+  epochs: 70
   topk_valid: 20
   seed: 2023
   hyperth: 4
