@@ -50,9 +50,9 @@ NetEase:
   self_loop: False
   c_lambdas: [0.1]
   c_temps: [0.25]
-  epochs: 100
+  epochs: 80
   topk_valid: 20
-  seed: 723987237
+  seed: 2023
   hyperth: 2
   UB_coefs: [1, 1]
   UI_coefs: [1, 1]
