@@ -167,10 +167,11 @@ def main():
 
                 pbar.set_description("epoch: %d, loss: %.4f, bpr_loss: %.4f, c_loss: %.4f" %(epoch, loss_scalar, bpr_loss_scalar, c_loss_scalar))
             
-            metrics = {}
-            metrics["val"] = test(model, dataset.val_loader, conf)
-            metrics["test"] = test(model, dataset.test_loader, conf)
-            best_metrics, best_perform, best_epoch = log_metrics(conf, model, metrics, run, log_path, checkpoint_model_path, checkpoint_conf_path, epoch, batch_anchor, best_metrics, best_perform, best_epoch)
+            if epoch % conf["test_interval"] == 0:
+                metrics = {}
+                metrics["val"] = test(model, dataset.val_loader, conf)
+                metrics["test"] = test(model, dataset.test_loader, conf)
+                best_metrics, best_perform, best_epoch = log_metrics(conf, model, metrics, run, log_path, checkpoint_model_path, checkpoint_conf_path, epoch, batch_anchor, best_metrics, best_perform, best_epoch)
 
 
 def init_best_metrics(conf):
