@@ -51,7 +51,7 @@ NetEase:
   c_temps: [0.25]
   epochs: 100
   topk_valid: 20
-  seed: 2023
+  seed: 723987237
   hyperth: 2
   UB_coefs: [1, 1]
   UI_coefs: [1, 1]
