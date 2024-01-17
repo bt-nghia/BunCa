@@ -50,7 +50,7 @@ NetEase:
   self_loop: False
   c_lambdas: [0.1]
   c_temps: [0.25]
-  epochs: 80
+  epochs: 200
   topk_valid: 20
   seed: 2023
   hyperth: 2
@@ -63,7 +63,7 @@ NetEase:
   nhead: 2
   contrast_weight: [0.3, 0.3, 0.2, 0.2]
   extra_layer: True
-  test_interval: 21
+  test_interval: 5
 
 
 
