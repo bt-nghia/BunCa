@@ -23,12 +23,6 @@ from torch_geometric.utils.sparse import set_sparse_value
 
 class AsymMatrix(MessagePassing):
 
-    '''
-    The Asymmatrix is inspired by GAT and GATv2 convolution 
-    by removing linear layer just keep edge's weight due to 
-    the large dataset such as NetEase
-    '''
-
     _alpha: OptTensor
 
     def __init__(
@@ -104,7 +98,6 @@ class AsymMatrix(MessagePassing):
         assert x_l is not None
         assert x_r is not None
 
-        # propagate_type: (x: PairTensor, edge_attr: OptTensor)
         out = self.propagate(edge_index, x=(x_l, x_r), edge_attr=edge_attr,
                              size=None)
 
@@ -123,7 +116,6 @@ class AsymMatrix(MessagePassing):
         if isinstance(return_attention_weights, bool):
             if isinstance(edge_index, Tensor):
                 if is_torch_sparse_tensor(edge_index):
-                    # TODO TorchScript requires to return a tuple
                     adj = set_sparse_value(edge_index, alpha)
                     return out, (adj, alpha)
                 else:
