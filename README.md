@@ -2,13 +2,13 @@
 -------------
 
 
-## how to run?
+## How to run?
 
 - extract 3 datasets (iFashion, NetEase, Youshu) in dataset.tgz
 - run `run.sh` to train on 3 datasets Youshu, iFashion, NetEase
 
 
-## hyperparams
+## Hyperparams
 
 Some important hyper parameters:
 - `lrs`: learning rate
@@ -17,7 +17,7 @@ Some important hyper parameters:
 - `w3/w4`: BC sub-view user/bundle weight
 
 
-## dataset
+## Dataset
 
 - `bundle_item.txt`: bundle-item affiliation 
 - `user_item.txt`: user, item historical interaction
