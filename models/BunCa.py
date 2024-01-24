@@ -97,13 +97,6 @@ class BunCa(nn.Module):
         self.c_temp = self.conf["c_temp"]
 
         # light-gcn weight
-        temp = self.conf["UB_coefs"]
-        self.UB_coefs = torch.tensor(temp).unsqueeze(0).unsqueeze(-1).to(self.device)
-        temp = self.conf["BI_coefs"]
-        self.BI_coefs = torch.tensor(temp).unsqueeze(0).unsqueeze(-1).to(self.device)
-        temp = self.conf["UI_coefs"]
-        self.UI_coefs = torch.tensor(temp).unsqueeze(0).unsqueeze(-1).to(self.device)
-        del temp
         self.a_self_loop = self.conf["self_loop"]
         self.n_head = self.conf["nhead"]
         # ii-asym matrix
@@ -287,9 +280,9 @@ class BunCa(nn.Module):
         IL_items_feat, _ = self.iui_gat_conv(self.items_feature, self.iui_edge_index, return_attention_weights=True) 
         IL_items_feat = IL_items_feat * self.nw + self.items_feature * self.sw
         if test:
-            IL_users_feature, IL_items_feature = self.one_propagate(self.item_level_graph_ori, self.users_feature, IL_items_feat, self.item_level_dropout, test, self.UI_coefs)
+            IL_users_feature, IL_items_feature = self.one_propagate(self.item_level_graph_ori, self.users_feature, IL_items_feat, self.item_level_dropout, test, None)
         else:
-            IL_users_feature, IL_items_feature = self.one_propagate(self.item_level_graph, self.users_feature, IL_items_feat, self.item_level_dropout, test, self.UI_coefs)
+            IL_users_feature, IL_items_feature = self.one_propagate(self.item_level_graph, self.users_feature, IL_items_feat, self.item_level_dropout, test, None)
 
         # aggregate the items embeddings within one bundle to obtain the bundle representation
         IL_bundles_feature = self.get_IL_bundle_rep(IL_items_feature, test)
@@ -298,9 +291,9 @@ class BunCa(nn.Module):
         IL_items_feat2, _ = self.ibi_gat_conv(self.items_feature, self.ibi_edge_index, return_attention_weights=True) 
         IL_items_feat2 = IL_items_feat2 * self.nw + self.items_feature * self.sw
         if test:
-            BIL_bundles_feature, IL_items_feature2 = self.one_propagate(self.bi_propagate_graph_ori, self.bundles_feature, IL_items_feat2, self.item_level_dropout, test, self.BI_coefs)
+            BIL_bundles_feature, IL_items_feature2 = self.one_propagate(self.bi_propagate_graph_ori, self.bundles_feature, IL_items_feat2, self.item_level_dropout, test, None)
         else:
-            BIL_bundles_feature, IL_items_feature2 = self.one_propagate(self.bi_propagate_graph, self.bundles_feature, IL_items_feat2, self.item_level_dropout, test, self.BI_coefs)
+            BIL_bundles_feature, IL_items_feature2 = self.one_propagate(self.bi_propagate_graph, self.bundles_feature, IL_items_feat2, self.item_level_dropout, test, None)
         
         # agg item -> user
         BIL_users_feature = self.get_IL_user_rep(IL_items_feature2, test)
@@ -311,9 +304,9 @@ class BunCa(nn.Module):
 
         #  ============================= bundle level propagation =============================
         if test:
-            BL_users_feature, BL_bundles_feature = self.one_propagate(self.bundle_level_graph_ori, self.users_feature, self.bundles_feature, self.bundle_level_dropout, test, self.UB_coefs)
+            BL_users_feature, BL_bundles_feature = self.one_propagate(self.bundle_level_graph_ori, self.users_feature, self.bundles_feature, self.bundle_level_dropout, test, None)
         else:
-            BL_users_feature, BL_bundles_feature = self.one_propagate(self.bundle_level_graph, self.users_feature, self.bundles_feature, self.bundle_level_dropout, test, self.UB_coefs)
+            BL_users_feature, BL_bundles_feature = self.one_propagate(self.bundle_level_graph, self.users_feature, self.bundles_feature, self.bundle_level_dropout, test, None)
 
         BL_users_feature = self.w1 * BL_users_feature
         BL_bundles_feature = self.w2 * BL_bundles_feature

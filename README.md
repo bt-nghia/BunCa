@@ -1,4 +1,19 @@
-# how to run?
+## how to run?
 
-- extract 3 datasets in dataset.tgz
-- `sh run.sh` to train on 3 datasets Youshu, iFashion, NetEase
+- extract 3 datasets (iFashion, NetEase, Youshu) in dataset.tgz
+- run `run.sh` to train on 3 datasets Youshu, iFashion, NetEase
+
+
+## hyperparams
+
+- `lrs`
+- `sw`: residual connection weight
+- `w1=w2`: Cohesive view weight of user/bundle
+- `w3=w4`: BC sub-view user/bundle weight
+
+
+## dataset
+
+- `bundle_item.txt` :bundle-item affiliation 
+- `user_item.txt` :user, item historical interaction
+- `user_bundle_train/tune/test.txt` : user-bundle interaction train/valid/test set

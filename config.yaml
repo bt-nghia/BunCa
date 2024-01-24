@@ -20,9 +20,6 @@ Youshu:
   epochs: 100
   seed: 2023
   hyperth: 10000
-  UB_coefs: [1, 1]
-  UI_coefs: [1, 1]
-  BI_coefs: [1, 1]
   sep: "\t"
   file_type: ".txt"
   topk_valid: 20
@@ -54,9 +51,6 @@ NetEase:
   topk_valid: 20
   seed: 2023
   hyperth: 2
-  UB_coefs: [1, 1]
-  UI_coefs: [1, 1]
-  BI_coefs: [1, 1]
   sep: "\t"
   file_type: ".txt"
   topk_valid: 20
@@ -89,9 +83,6 @@ iFashion:
   topk_valid: 20
   seed: 2023
   hyperth: 4
-  UB_coefs: [1, 1]
-  UI_coefs: [1, 1]
-  BI_coefs: [1, 1]
   sep: "\t"
   file_type: ".txt"
   topk_valid: 20
