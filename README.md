@@ -22,3 +22,11 @@ Some important hyper parameters:
 - `bundle_item.txt`: bundle-item affiliation 
 - `user_item.txt`: user, item historical interaction
 - `user_bundle_train/tune/test.txt`: user-bundle interaction train/valid/test set
+
+
+## Requirements
+
+- torch == 2.0.1
+- scipy == 1.11.2
+- torch-geometric == 2.3.1
+- tensorboardX == 2.6.2.2
