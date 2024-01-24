@@ -13,8 +13,8 @@
 Some important hyper parameters:
 - `lrs`: learning rate
 - `sw`: residual connection weight
-- `w1=w2`: Cohesive view weight of user/bundle
-- `w3=w4`: BC sub-view user/bundle weight
+- `w1/w2`: Cohesive view weight of user/bundle
+- `w3/w4`: BC sub-view user/bundle weight
 
 
 ## dataset
