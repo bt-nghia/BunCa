@@ -1,5 +1,5 @@
 # Bundle Recommendation with Item Causation-enhanced Multi-view Learning
--------------
+This is the Pytorch implementation for paper " Bundle Recommendation with Item Causation-enhanced Multi-view Learning "
 
 
 ## How to run?
