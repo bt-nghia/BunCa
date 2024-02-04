@@ -21,9 +21,11 @@ def get_cmd():
     parser = argparse.ArgumentParser()
     # experimental settings
     parser.add_argument("-g", "--gpu", default="0", type=str, help="which gpu to use")
-    parser.add_argument("-d", "--dataset", default="Youshu", type=str, help="which dataset to use, options: NetEase, Youshu, iFashion")
+    parser.add_argument("-d", "--dataset", default="Youshu", type=str,
+                        help="which dataset to use, options: NetEase, Youshu, iFashion")
     parser.add_argument("-m", "--model", default="BunCa", type=str, help="which model to use, options: CrossCBR")
-    parser.add_argument("-i", "--info", default="", type=str, help="any auxilary info that will be appended to the log file name")
+    parser.add_argument("-i", "--info", default="", type=str,
+                        help="any auxilary info that will be appended to the log file name")
     parser.add_argument("-w1", "--weight_user_UB", default="1", type=float, help="weight of ovl edges")
     parser.add_argument("-w2", "--weight_bundle_UB", default="1", type=float, help="weight of non ovl edges")
     parser.add_argument("-w3", "--UIweight", default="0.5", type=float)
@@ -75,11 +77,13 @@ def main():
     np.random.seed(conf["seed"])
 
     for lr, l2_reg, item_level_ratio, bundle_level_ratio, bundle_agg_ratio, embedding_size, num_layers, c_lambda, c_temp in \
-            product(conf['lrs'], conf['l2_regs'], conf['item_level_ratios'], conf['bundle_level_ratios'], conf['bundle_agg_ratios'], conf["embedding_sizes"], conf["num_layerss"], conf["c_lambdas"], conf["c_temps"]):
-        log_path = "./log/%s/%s" %(conf["dataset"], conf["model"])
-        run_path = "./runs/%s/%s" %(conf["dataset"], conf["model"])
-        checkpoint_model_path = "./checkpoints/%s/%s/model" %(conf["dataset"], conf["model"])
-        checkpoint_conf_path = "./checkpoints/%s/%s/conf" %(conf["dataset"], conf["model"])
+            product(conf['lrs'], conf['l2_regs'], conf['item_level_ratios'], conf['bundle_level_ratios'],
+                    conf['bundle_agg_ratios'], conf["embedding_sizes"], conf["num_layerss"], conf["c_lambdas"],
+                    conf["c_temps"]):
+        log_path = "./log/%s/%s" % (conf["dataset"], conf["model"])
+        run_path = "./runs/%s/%s" % (conf["dataset"], conf["model"])
+        checkpoint_model_path = "./checkpoints/%s/%s/model" % (conf["dataset"], conf["model"])
+        checkpoint_conf_path = "./checkpoints/%s/%s/conf" % (conf["dataset"], conf["model"])
         if not os.path.isdir(run_path):
             os.makedirs(run_path)
         if not os.path.isdir(log_path):
@@ -102,7 +106,8 @@ def main():
         if conf["aug_type"] == "OP":
             assert item_level_ratio == 0 and bundle_level_ratio == 0 and bundle_agg_ratio == 0
 
-        settings += ["Neg_%d" %(conf["neg_num"]), str(conf["batch_size_train"]), str(lr), str(l2_reg), str(embedding_size)]
+        settings += ["Neg_%d" % (conf["neg_num"]), str(conf["batch_size_train"]), str(lr), str(l2_reg),
+                     str(embedding_size)]
 
         conf["item_level_ratio"] = item_level_ratio
         conf["bundle_level_ratio"] = bundle_level_ratio
@@ -123,14 +128,14 @@ def main():
         log = open(log_path, "a")
         log.write(str(conf) + "\n")
         log.close()
-            
+
         run = SummaryWriter(run_path)
 
         # model
         if conf['model'] == 'BunCa':
             model = BunCa(conf, dataset.graphs).to(device)
         else:
-            raise ValueError("Unimplemented model %s" %(conf["model"]))
+            raise ValueError("Unimplemented model %s" % (conf["model"]))
 
         optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=conf["l2_reg"])
 
@@ -151,7 +156,7 @@ def main():
                 batch_anchor = epoch_anchor + batch_i
 
                 ED_drop = False
-                if conf["aug_type"] == "ED" and (batch_anchor+1) % ed_interval_bs == 0:
+                if conf["aug_type"] == "ED" and (batch_anchor + 1) % ed_interval_bs == 0:
                     ED_drop = True
                 bpr_loss, c_loss = model(batch, ED_drop=ED_drop)
                 loss = bpr_loss + conf["c_lambda"] * c_loss
@@ -165,13 +170,17 @@ def main():
                 run.add_scalar("loss_c", c_loss_scalar, batch_anchor)
                 run.add_scalar("loss", loss_scalar, batch_anchor)
 
-                pbar.set_description("epoch: %d, loss: %.4f, bpr_loss: %.4f, c_loss: %.4f" %(epoch, loss_scalar, bpr_loss_scalar, c_loss_scalar))
-            
+                pbar.set_description("epoch: %d, loss: %.4f, bpr_loss: %.4f, c_loss: %.4f" % (
+                epoch, loss_scalar, bpr_loss_scalar, c_loss_scalar))
+
             if epoch % conf["test_interval"] == 0:
                 metrics = {}
                 metrics["val"] = test(model, dataset.val_loader, conf)
                 metrics["test"] = test(model, dataset.test_loader, conf)
-                best_metrics, best_perform, best_epoch = log_metrics(conf, model, metrics, run, log_path, checkpoint_model_path, checkpoint_conf_path, epoch, batch_anchor, best_metrics, best_perform, best_epoch)
+                best_metrics, best_perform, best_epoch = log_metrics(conf, model, metrics, run, log_path,
+                                                                     checkpoint_model_path, checkpoint_conf_path, epoch,
+                                                                     batch_anchor, best_metrics, best_perform,
+                                                                     best_epoch)
 
 
 def init_best_metrics(conf):
@@ -199,30 +208,34 @@ def write_log(run, log_path, topk, step, metrics):
 
     for m, val_score in val_scores.items():
         test_score = test_scores[m]
-        run.add_scalar("%s_%d/Val" %(m, topk), val_score[topk], step)
-        run.add_scalar("%s_%d/Test" %(m, topk), test_score[topk], step)
+        run.add_scalar("%s_%d/Val" % (m, topk), val_score[topk], step)
+        run.add_scalar("%s_%d/Test" % (m, topk), test_score[topk], step)
 
-    val_str = "%s, Top_%d, Val:  recall: %f, ndcg: %f" %(curr_time, topk, val_scores["recall"][topk], val_scores["ndcg"][topk])
-    test_str = "%s, Top_%d, Test: recall: %f, ndcg: %f" %(curr_time, topk, test_scores["recall"][topk], test_scores["ndcg"][topk])
+    val_str = "%s, Top_%d, Val:  recall: %f, ndcg: %f" % (
+    curr_time, topk, val_scores["recall"][topk], val_scores["ndcg"][topk])
+    test_str = "%s, Top_%d, Test: recall: %f, ndcg: %f" % (
+    curr_time, topk, test_scores["recall"][topk], test_scores["ndcg"][topk])
 
     log = open(log_path, "a")
-    log.write("%s\n" %(val_str))
-    log.write("%s\n" %(test_str))
+    log.write("%s\n" % (val_str))
+    log.write("%s\n" % (test_str))
     log.close()
 
     print(val_str)
     print(test_str)
 
 
-def log_metrics(conf, model, metrics, run, log_path, checkpoint_model_path, checkpoint_conf_path, epoch, batch_anchor, best_metrics, best_perform, best_epoch):
+def log_metrics(conf, model, metrics, run, log_path, checkpoint_model_path, checkpoint_conf_path, epoch, batch_anchor,
+                best_metrics, best_perform, best_epoch):
     for topk in conf["topk"]:
         write_log(run, log_path, topk, batch_anchor, metrics)
 
     log = open(log_path, "a")
 
     topk_ = conf["topk_valid"]
-    print("top%d as the final evaluation standard" %(topk_))
-    if metrics["val"]["recall"][topk_] > best_metrics["val"]["recall"][topk_] and metrics["val"]["ndcg"][topk_] > best_metrics["val"]["ndcg"][topk_]:
+    print("top%d as the final evaluation standard" % (topk_))
+    if metrics["val"]["recall"][topk_] > best_metrics["val"]["recall"][topk_] and metrics["val"]["ndcg"][topk_] > \
+            best_metrics["val"]["ndcg"][topk_]:
         torch.save(model.state_dict(), checkpoint_model_path)
         dump_conf = dict(conf)
         del dump_conf["device"]
@@ -234,13 +247,15 @@ def log_metrics(conf, model, metrics, run, log_path, checkpoint_model_path, chec
                 for metric in res:
                     best_metrics[key][metric][topk] = metrics[key][metric][topk]
 
-            best_perform["test"][topk] = "%s, Best in epoch %d, TOP %d: REC_T=%.5f, NDCG_T=%.5f" %(curr_time, best_epoch, topk, best_metrics["test"]["recall"][topk], best_metrics["test"]["ndcg"][topk])
-            best_perform["val"][topk] = "%s, Best in epoch %d, TOP %d: REC_V=%.5f, NDCG_V=%.5f" %(curr_time, best_epoch, topk, best_metrics["val"]["recall"][topk], best_metrics["val"]["ndcg"][topk])
+            best_perform["test"][topk] = "%s, Best in epoch %d, TOP %d: REC_T=%.5f, NDCG_T=%.5f" % (
+            curr_time, best_epoch, topk, best_metrics["test"]["recall"][topk], best_metrics["test"]["ndcg"][topk])
+            best_perform["val"][topk] = "%s, Best in epoch %d, TOP %d: REC_V=%.5f, NDCG_V=%.5f" % (
+            curr_time, best_epoch, topk, best_metrics["val"]["recall"][topk], best_metrics["val"]["ndcg"][topk])
             print(best_perform["val"][topk])
             print(best_perform["test"][topk])
             log.write(best_perform["val"][topk] + "\n")
             log.write(best_perform["test"][topk] + "\n")
-        
+
     log.close()
 
     return best_metrics, best_perform, best_epoch
@@ -274,7 +289,8 @@ def get_metrics(metrics, grd, pred, topks):
     tmp = {"recall": {}, "ndcg": {}}
     for topk in topks:
         _, col_indice = torch.topk(pred, topk)
-        row_indice = torch.zeros_like(col_indice) + torch.arange(pred.shape[0], device=pred.device, dtype=torch.long).view(-1, 1)
+        row_indice = torch.zeros_like(col_indice) + torch.arange(pred.shape[0], device=pred.device,
+                                                                 dtype=torch.long).view(-1, 1)
         is_hit = grd[row_indice.view(-1).to(grd.device), col_indice.view(-1).to(grd.device)].view(-1, topk)
 
         tmp["recall"][topk] = get_recall(pred, grd, is_hit, topk)
@@ -295,14 +311,14 @@ def get_recall(pred, grd, is_hit, topk):
 
     # remove those test cases who don't have any positive items
     denorm = pred.shape[0] - (num_pos == 0).sum().item()
-    nomina = (hit_cnt/(num_pos+epsilon)).sum().item()
+    nomina = (hit_cnt / (num_pos + epsilon)).sum().item()
 
     return [nomina, denorm]
 
 
 def get_ndcg(pred, grd, is_hit, topk):
     def DCG(hit, topk, device):
-        hit = hit/torch.log2(torch.arange(2, topk+2, device=device, dtype=torch.float))
+        hit = hit / torch.log2(torch.arange(2, topk + 2, device=device, dtype=torch.float))
         return hit.sum(-1)
 
     def IDCG(num_pos, topk, device):
@@ -311,16 +327,16 @@ def get_ndcg(pred, grd, is_hit, topk):
         return DCG(hit, topk, device)
 
     device = grd.device
-    IDCGs = torch.empty(1+topk, dtype=torch.float)
+    IDCGs = torch.empty(1 + topk, dtype=torch.float)
     IDCGs[0] = 1  # avoid 0/0
-    for i in range(1, topk+1):
+    for i in range(1, topk + 1):
         IDCGs[i] = IDCG(i, topk, device)
 
     num_pos = grd.sum(dim=1).clamp(0, topk).to(torch.long)
     dcg = DCG(is_hit, topk, device)
 
     idcg = IDCGs[num_pos]
-    ndcg = dcg/idcg.to(device)
+    ndcg = dcg / idcg.to(device)
 
     denorm = pred.shape[0] - (num_pos == 0).sum().item()
     nomina = ndcg.sum().item()

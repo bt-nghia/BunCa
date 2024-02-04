@@ -2,7 +2,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import scipy.sparse as sp 
+import scipy.sparse as sp
 from gene_ii_co_oc import load_sp_mat
 from models.AsymModule import AsymMatrix
 
@@ -17,7 +17,7 @@ def cal_bpr_loss(pred, alpha=0.2):
         pos = pred[:, 0].unsqueeze(1)
 
     # normal bpr loss
-    loss = - torch.log(torch.sigmoid(pos - negs)) # [bs]
+    loss = - torch.log(torch.sigmoid(pos - negs))  # [bs]
     loss = torch.mean(loss)
 
     # uib loss
@@ -25,13 +25,13 @@ def cal_bpr_loss(pred, alpha=0.2):
     # loss_n = -torch.log(torch.sigmoid(-negs))
     # loss = loss_p + alpha * loss_n
     # loss = torch.mean(loss)
-    
+
     return loss
 
 
 def laplace_transform(graph):
-    rowsum_sqrt = sp.diags(1/(np.sqrt(graph.sum(axis=1).A.ravel()) + 1e-8))
-    colsum_sqrt = sp.diags(1/(np.sqrt(graph.sum(axis=0).A.ravel()) + 1e-8))
+    rowsum_sqrt = sp.diags(1 / (np.sqrt(graph.sum(axis=1).A.ravel()) + 1e-8))
+    colsum_sqrt = sp.diags(1 / (np.sqrt(graph.sum(axis=0).A.ravel()) + 1e-8))
     graph = rowsum_sqrt @ graph @ colsum_sqrt
 
     return graph
@@ -47,7 +47,7 @@ def to_tensor(graph):
 
 
 def np_edge_dropout(values, dropout_ratio):
-    mask = np.random.choice([0, 1], size=(len(values),), p=[dropout_ratio, 1-dropout_ratio])
+    mask = np.random.choice([0, 1], size=(len(values),), p=[dropout_ratio, 1 - dropout_ratio])
     values = mask * values
     return values
 
@@ -102,17 +102,19 @@ class BunCa(nn.Module):
         # ii-asym matrix
         self.sw = conf["sw"]
         self.nw = conf["nw"]
-        self.ibi_edge_index = torch.tensor(np.load("datasets/{}/n_neigh_ibi.npy".format(conf["dataset"]), allow_pickle=True)).to(self.device)
-        self.iui_edge_index = torch.tensor(np.load("datasets/{}/n_neigh_iui.npy".format(conf["dataset"]), allow_pickle=True)).to(self.device)
-        self.iui_gat_conv = Amatrix(in_dim=64, out_dim=64, n_layer=1, dropout=0.1, heads=self.n_head, concat=False, self_loop=self.a_self_loop, extra_layer=self.extra_layer)
-        self.ibi_gat_conv = Amatrix(in_dim=64, out_dim=64, n_layer=1, dropout=0.1, heads=self.n_head, concat=False, self_loop=self.a_self_loop, extra_layer=self.extra_layer)
-
+        self.ibi_edge_index = torch.tensor(
+            np.load("datasets/{}/n_neigh_ibi.npy".format(conf["dataset"]), allow_pickle=True)).to(self.device)
+        self.iui_edge_index = torch.tensor(
+            np.load("datasets/{}/n_neigh_iui.npy".format(conf["dataset"]), allow_pickle=True)).to(self.device)
+        self.iui_gat_conv = Amatrix(in_dim=64, out_dim=64, n_layer=1, dropout=0.1, heads=self.n_head, concat=False,
+                                    self_loop=self.a_self_loop, extra_layer=self.extra_layer)
+        self.ibi_gat_conv = Amatrix(in_dim=64, out_dim=64, n_layer=1, dropout=0.1, heads=self.n_head, concat=False,
+                                    self_loop=self.a_self_loop, extra_layer=self.extra_layer)
 
     def init_md_dropouts(self):
         self.item_level_dropout = nn.Dropout(self.conf["item_level_ratio"], True)
         self.bundle_level_dropout = nn.Dropout(self.conf["bundle_level_ratio"], True)
         self.bundle_agg_dropout = nn.Dropout(self.conf["bundle_agg_ratio"], True)
-
 
     def init_emb(self):
         self.users_feature = nn.Parameter(torch.FloatTensor(self.num_users, self.embedding_size))
@@ -122,17 +124,18 @@ class BunCa(nn.Module):
         self.items_feature = nn.Parameter(torch.FloatTensor(self.num_items, self.embedding_size))
         nn.init.xavier_normal_(self.items_feature)
 
-
     def get_item_level_graph(self):
         ui_graph = self.ui_graph
         bi_graph = self.bi_graph
         device = self.device
         modification_ratio = self.conf["item_level_ratio"]
 
-        item_level_graph = sp.bmat([[sp.csr_matrix((ui_graph.shape[0], ui_graph.shape[0])), ui_graph], [ui_graph.T, sp.csr_matrix((ui_graph.shape[1], ui_graph.shape[1]))]])
-        bi_propagate_graph = sp.bmat([[sp.csr_matrix((bi_graph.shape[0], bi_graph.shape[0])), bi_graph], [bi_graph.T, sp.csr_matrix((bi_graph.shape[1], bi_graph.shape[1]))]])
+        item_level_graph = sp.bmat([[sp.csr_matrix((ui_graph.shape[0], ui_graph.shape[0])), ui_graph],
+                                    [ui_graph.T, sp.csr_matrix((ui_graph.shape[1], ui_graph.shape[1]))]])
+        bi_propagate_graph = sp.bmat([[sp.csr_matrix((bi_graph.shape[0], bi_graph.shape[0])), bi_graph],
+                                      [bi_graph.T, sp.csr_matrix((bi_graph.shape[1], bi_graph.shape[1]))]])
         self.bi_propagate_graph_ori = to_tensor(laplace_transform(bi_propagate_graph)).to(device)
-        
+
         if modification_ratio != 0:
             if self.conf["aug_type"] == "ED":
                 graph = item_level_graph.tocoo()
@@ -146,13 +149,12 @@ class BunCa(nn.Module):
         self.item_level_graph = to_tensor(laplace_transform(item_level_graph)).to(device)
         self.bi_propagate_graph = to_tensor(laplace_transform(bi_propagate_graph)).to(device)
 
-
     def get_item_level_graph_ori(self):
         ui_graph = self.ui_graph
         device = self.device
-        item_level_graph = sp.bmat([[sp.csr_matrix((ui_graph.shape[0], ui_graph.shape[0])), ui_graph], [ui_graph.T, sp.csr_matrix((ui_graph.shape[1], ui_graph.shape[1]))]])
+        item_level_graph = sp.bmat([[sp.csr_matrix((ui_graph.shape[0], ui_graph.shape[0])), ui_graph],
+                                    [ui_graph.T, sp.csr_matrix((ui_graph.shape[1], ui_graph.shape[1]))]])
         self.item_level_graph_ori = to_tensor(laplace_transform(item_level_graph)).to(device)
-
 
     def get_bundle_level_graph(self, threshold):
         '''
@@ -168,7 +170,7 @@ class BunCa(nn.Module):
 
         bundle_level_graph = sp.bmat([[uu_graph, ub_graph],
                                       [ub_graph.T, bb_graph]])
-        
+
         self.bundle_level_graph_ori = to_tensor(laplace_transform(bundle_level_graph)).to(device)
 
         if modification_ratio != 0:
@@ -178,7 +180,6 @@ class BunCa(nn.Module):
                 bundle_level_graph = sp.coo_matrix((values, (graph.row, graph.col)), shape=graph.shape).tocsr()
 
         self.bundle_level_graph = to_tensor(laplace_transform(bundle_level_graph)).to(device)
-
 
     def get_bundle_agg_graph(self):
         bi_graph = self.bi_graph
@@ -191,9 +192,8 @@ class BunCa(nn.Module):
             bi_graph = sp.coo_matrix((values, (graph.row, graph.col)), shape=graph.shape).tocsr()
 
         bundle_size = bi_graph.sum(axis=1) + 1e-8
-        bi_graph = sp.diags(1/bundle_size.A.ravel()) @ bi_graph
+        bi_graph = sp.diags(1 / bundle_size.A.ravel()) @ bi_graph
         self.bundle_agg_graph = to_tensor(bi_graph).to(device)
-
 
     def get_user_agg_graph(self):
         ui_graph = self.ui_graph
@@ -206,25 +206,22 @@ class BunCa(nn.Module):
             ui_graph = sp.coo_matrix((values, (graph.row, graph.col)), shape=graph.shape).tocsr()
 
         user_size = ui_graph.sum(axis=1) + 1e-8
-        ui_graph = sp.diags(1/user_size.A.ravel()) @ ui_graph
+        ui_graph = sp.diags(1 / user_size.A.ravel()) @ ui_graph
         self.user_agg_graph = to_tensor(ui_graph).to(device)
-
 
     def get_bundle_agg_graph_ori(self):
         bi_graph = self.bi_graph
         device = self.device
 
         bundle_size = bi_graph.sum(axis=1) + 1e-8
-        bi_graph = sp.diags(1/bundle_size.A.ravel()) @ bi_graph
+        bi_graph = sp.diags(1 / bundle_size.A.ravel()) @ bi_graph
         self.bundle_agg_graph_ori = to_tensor(bi_graph).to(device)
 
-    
     def get_user_agg_graph_ori(self):
         ui_graph = self.ui_graph
         user_size = ui_graph.sum(axis=1) + 1e-8
-        ui_graph = sp.diags(1/user_size.A.ravel()) @ ui_graph
+        ui_graph = sp.diags(1 / user_size.A.ravel()) @ ui_graph
         self.user_agg_graph_ori = to_tensor(ui_graph).to(self.device)
-
 
     def one_propagate(self, graph, A_feature, B_feature, mess_dropout, test, coefs=None):
         features = torch.cat((A_feature, B_feature), 0)
@@ -232,10 +229,10 @@ class BunCa(nn.Module):
 
         for i in range(self.num_layers):
             features = torch.spmm(graph, features)
-            if self.conf["aug_type"] == "MD" and not test: # !!! important
+            if self.conf["aug_type"] == "MD" and not test:  # !!! important
                 features = mess_dropout(features)
 
-            features = features / (i+2)
+            features = features / (i + 2)
             all_features.append(F.normalize(features, p=2, dim=1))
 
         all_features = torch.stack(all_features, 1)
@@ -246,7 +243,6 @@ class BunCa(nn.Module):
         A_feature, B_feature = torch.split(all_features, (A_feature.shape[0], B_feature.shape[0]), 0)
 
         return A_feature, B_feature
-
 
     def get_IL_bundle_rep(self, IL_items_feature, test):
         if test:
@@ -259,8 +255,7 @@ class BunCa(nn.Module):
             IL_bundles_feature = self.bundle_agg_dropout(IL_bundles_feature)
 
         return IL_bundles_feature
-    
-    
+
     def get_IL_user_rep(self, IL_items_feature, test):
         if test:
             IL_users_feature = torch.matmul(self.user_agg_graph_ori, IL_items_feature)
@@ -273,28 +268,33 @@ class BunCa(nn.Module):
 
         return IL_users_feature
 
-
     def propagate(self, test=False):
         #  =============================  item level propagation  =============================
         #  ======== UI =================
-        IL_items_feat, _ = self.iui_gat_conv(self.items_feature, self.iui_edge_index, return_attention_weights=True) 
+        IL_items_feat, _ = self.iui_gat_conv(self.items_feature, self.iui_edge_index, return_attention_weights=True)
         IL_items_feat = IL_items_feat * self.nw + self.items_feature * self.sw
         if test:
-            IL_users_feature, IL_items_feature = self.one_propagate(self.item_level_graph_ori, self.users_feature, IL_items_feat, self.item_level_dropout, test, None)
+            IL_users_feature, IL_items_feature = self.one_propagate(self.item_level_graph_ori, self.users_feature,
+                                                                    IL_items_feat, self.item_level_dropout, test, None)
         else:
-            IL_users_feature, IL_items_feature = self.one_propagate(self.item_level_graph, self.users_feature, IL_items_feat, self.item_level_dropout, test, None)
+            IL_users_feature, IL_items_feature = self.one_propagate(self.item_level_graph, self.users_feature,
+                                                                    IL_items_feat, self.item_level_dropout, test, None)
 
         # aggregate the items embeddings within one bundle to obtain the bundle representation
         IL_bundles_feature = self.get_IL_bundle_rep(IL_items_feature, test)
 
         # ========== BI ================
-        IL_items_feat2, _ = self.ibi_gat_conv(self.items_feature, self.ibi_edge_index, return_attention_weights=True) 
+        IL_items_feat2, _ = self.ibi_gat_conv(self.items_feature, self.ibi_edge_index, return_attention_weights=True)
         IL_items_feat2 = IL_items_feat2 * self.nw + self.items_feature * self.sw
         if test:
-            BIL_bundles_feature, IL_items_feature2 = self.one_propagate(self.bi_propagate_graph_ori, self.bundles_feature, IL_items_feat2, self.item_level_dropout, test, None)
+            BIL_bundles_feature, IL_items_feature2 = self.one_propagate(self.bi_propagate_graph_ori,
+                                                                        self.bundles_feature, IL_items_feat2,
+                                                                        self.item_level_dropout, test, None)
         else:
-            BIL_bundles_feature, IL_items_feature2 = self.one_propagate(self.bi_propagate_graph, self.bundles_feature, IL_items_feat2, self.item_level_dropout, test, None)
-        
+            BIL_bundles_feature, IL_items_feature2 = self.one_propagate(self.bi_propagate_graph, self.bundles_feature,
+                                                                        IL_items_feat2, self.item_level_dropout, test,
+                                                                        None)
+
         # agg item -> user
         BIL_users_feature = self.get_IL_user_rep(IL_items_feature2, test)
 
@@ -304,9 +304,13 @@ class BunCa(nn.Module):
 
         #  ============================= bundle level propagation =============================
         if test:
-            BL_users_feature, BL_bundles_feature = self.one_propagate(self.bundle_level_graph_ori, self.users_feature, self.bundles_feature, self.bundle_level_dropout, test, None)
+            BL_users_feature, BL_bundles_feature = self.one_propagate(self.bundle_level_graph_ori, self.users_feature,
+                                                                      self.bundles_feature, self.bundle_level_dropout,
+                                                                      test, None)
         else:
-            BL_users_feature, BL_bundles_feature = self.one_propagate(self.bundle_level_graph, self.users_feature, self.bundles_feature, self.bundle_level_dropout, test, None)
+            BL_users_feature, BL_bundles_feature = self.one_propagate(self.bundle_level_graph, self.users_feature,
+                                                                      self.bundles_feature, self.bundle_level_dropout,
+                                                                      test, None)
 
         BL_users_feature = self.w1 * BL_users_feature
         BL_bundles_feature = self.w2 * BL_bundles_feature
@@ -315,8 +319,7 @@ class BunCa(nn.Module):
         bundles_feature = [fuse_bundles_feature, BL_bundles_feature]
 
         return users_feature, bundles_feature
-    
-    
+
     def cal_c_loss(self, pos, aug):
         # pos: [batch_size, :, emb_size]
         # aug: [batch_size, :, emb_size]
@@ -325,16 +328,15 @@ class BunCa(nn.Module):
 
         pos = F.normalize(pos, p=2, dim=1)
         aug = F.normalize(aug, p=2, dim=1)
-        pos_score = torch.sum(pos * aug, dim=1) # [batch_size]
-        ttl_score = torch.matmul(pos, aug.permute(1, 0)) # [batch_size, batch_size]
+        pos_score = torch.sum(pos * aug, dim=1)  # [batch_size]
+        ttl_score = torch.matmul(pos, aug.permute(1, 0))  # [batch_size, batch_size]
 
-        pos_score = torch.exp(pos_score / self.c_temp) # [batch_size]
-        ttl_score = torch.sum(torch.exp(ttl_score / self.c_temp), axis=1) # [batch_size]
+        pos_score = torch.exp(pos_score / self.c_temp)  # [batch_size]
+        ttl_score = torch.sum(torch.exp(ttl_score / self.c_temp), axis=1)  # [batch_size]
 
         c_loss = - torch.mean(torch.log(pos_score / ttl_score))
 
         return c_loss
-
 
     def cal_loss(self, users_feature, bundles_feature):
         # IL: item_level, BL: bundle_level
@@ -349,15 +351,15 @@ class BunCa(nn.Module):
         u_cross_view_cl = self.cal_c_loss(IL_users_feature, BL_users_feature)
         b_cross_view_cl = self.cal_c_loss(IL_bundles_feature, BL_bundles_feature)
         u_native_view_cl = self.cal_c_loss(IL_users_feature + BL_users_feature, IL_users_feature + BL_users_feature)
-        b_native_view_cl = self.cal_c_loss(IL_bundles_feature + BL_bundles_feature, IL_bundles_feature + BL_bundles_feature)
-        
+        b_native_view_cl = self.cal_c_loss(IL_bundles_feature + BL_bundles_feature,
+                                           IL_bundles_feature + BL_bundles_feature)
+
         c_losses = [u_cross_view_cl, b_cross_view_cl, u_native_view_cl, b_native_view_cl]
         c_loss = 0
         for i in range(0, 4):
-            c_loss+=c_losses[i] * self.contrast_weight[i]
+            c_loss += c_losses[i] * self.contrast_weight[i]
 
         return bpr_loss, c_loss
-
 
     def forward(self, batch, ED_drop=False):
         # the edge drop can be performed by every batch or epoch, should be controlled in the train loop
@@ -378,18 +380,19 @@ class BunCa(nn.Module):
 
         return bpr_loss, c_loss
 
-
     def evaluate(self, propagate_result, users):
         users_feature, bundles_feature = propagate_result
         users_feature_atom, users_feature_non_atom = [i[users] for i in users_feature]
         bundles_feature_atom, bundles_feature_non_atom = bundles_feature
 
-        scores = torch.mm(users_feature_atom, bundles_feature_atom.t()) + torch.mm(users_feature_non_atom, bundles_feature_non_atom.t())
+        scores = torch.mm(users_feature_atom, bundles_feature_atom.t()) + torch.mm(users_feature_non_atom,
+                                                                                   bundles_feature_non_atom.t())
         return scores
-    
+
 
 class Amatrix(nn.Module):
-    def __init__(self, in_dim, out_dim, n_layer=1, dropout=0.0, heads=2, concat=False, self_loop=True, extra_layer=False):
+    def __init__(self, in_dim, out_dim, n_layer=1, dropout=0.0, heads=2, concat=False, self_loop=True,
+                 extra_layer=False):
         super(Amatrix, self).__init__()
         self.num_layer = n_layer
         self.dropout = dropout
@@ -399,15 +402,14 @@ class Amatrix(nn.Module):
         self.concat = concat
         self.self_loop = self_loop
         self.extra_layer = extra_layer
-        self.convs = nn.ModuleList([AsymMatrix(in_channels=self.in_dim, 
-                                              out_channels=self.out_dim, 
-                                              dropout=self.dropout,
-                                              heads=self.heads,
-                                              concat=self.concat,
-                                              add_self_loops=self.self_loop,
-                                              extra_layer=self.extra_layer) 
-                                              for _ in range(self.num_layer)])
-
+        self.convs = nn.ModuleList([AsymMatrix(in_channels=self.in_dim,
+                                               out_channels=self.out_dim,
+                                               dropout=self.dropout,
+                                               heads=self.heads,
+                                               concat=self.concat,
+                                               add_self_loops=self.self_loop,
+                                               extra_layer=self.extra_layer)
+                                    for _ in range(self.num_layer)])
 
     def forward(self, x, edge_index, return_attention_weights=True):
         feats = [x]

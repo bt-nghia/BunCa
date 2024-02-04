@@ -25,10 +25,12 @@ def save_sp_mat(csr_mat, name):
 def load_sp_mat(name):
     return sp.load_npz(name)
 
+
 def filter(threshold, mat):
     mask = mat >= threshold
     mat = mat * mask
     return mat
+
 
 def gen_ii_asym(ix_mat, threshold=0):
     '''
@@ -46,12 +48,14 @@ def gen_ii_asym(ix_mat, threshold=0):
     # normalize by row -> asym matrix
     return ii_co
 
+
 def get_cmd():
     parser = argparse.ArgumentParser()
     # experimental settings
     parser.add_argument("-d", "--dataset", default="Youshu", type=str, help="dataset to train")
     args = parser.parse_args()
     return args
+
 
 def get_stat(path, sep):
     with open(path, 'r') as f:
@@ -60,7 +64,7 @@ def get_stat(path, sep):
 
 
 if __name__ == '__main__':
-    
+
     paras = get_cmd().__dict__
     dataset_name = paras["dataset"]
 
@@ -71,18 +75,19 @@ if __name__ == '__main__':
     path = [dir + '/user_bundle_train.txt',
             dir + '/user_item.txt',
             dir + '/bundle_item.txt']
-    
+
     raw_graph = [get_graph(path[0], users, bundles, sep),
                  get_graph(path[1], users, items, sep),
                  get_graph(path[2], bundles, items, sep)]
 
     ub, ui, bi = raw_graph
 
-    pbar = tqdm(enumerate([ui.T, bi.T, ub.T, bi]), total = 4, desc="gene", ncols=100)
+    pbar = tqdm(enumerate([ui.T, bi.T, ub.T, bi]), total=4, desc="gene", ncols=100)
     asym_mat = []
     for i, mat in pbar:
         asym_mat.append(gen_ii_asym(mat))
 
-    pbar = tqdm(enumerate(["/iui_cooc.npz", "/ibi_cooc.npz", "/bub_cooc.npz", "/bib_cooc.npz"]), total = 4, desc="save", ncols=100)
+    pbar = tqdm(enumerate(["/iui_cooc.npz", "/ibi_cooc.npz", "/bub_cooc.npz", "/bib_cooc.npz"]), total=4, desc="save",
+                ncols=100)
     for i, data in pbar:
         save_sp_mat(asym_mat[i], dir + data)

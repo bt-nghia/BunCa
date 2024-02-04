@@ -22,23 +22,22 @@ from torch_geometric.utils.sparse import set_sparse_value
 
 
 class AsymMatrix(MessagePassing):
-
     _alpha: OptTensor
 
     def __init__(
-        self,
-        in_channels: Union[int, Tuple[int, int]],
-        out_channels: int,
-        heads: int = 1,
-        concat: bool = True,
-        negative_slope: float = 0.2,
-        dropout: float = 0.0,
-        add_self_loops: bool = True,
-        edge_dim: Optional[int] = None,
-        fill_value: Union[float, Tensor, str] = 'mean',
-        bias: bool = True,
-        extra_layer = False,
-        **kwargs,
+            self,
+            in_channels: Union[int, Tuple[int, int]],
+            out_channels: int,
+            heads: int = 1,
+            concat: bool = True,
+            negative_slope: float = 0.2,
+            dropout: float = 0.0,
+            add_self_loops: bool = True,
+            edge_dim: Optional[int] = None,
+            fill_value: Union[float, Tensor, str] = 'mean',
+            bias: bool = True,
+            extra_layer=False,
+            **kwargs,
     ):
         super().__init__(node_dim=0, **kwargs)
 
@@ -92,7 +91,7 @@ class AsymMatrix(MessagePassing):
                 x_l = self.lin_l(x).view(-1, H, C)
                 x_r = self.lin_r(x).view(-1, H, C)
             else:
-                x = x.expand(self.heads, x.shape[0], x.shape[1]).transpose(0,1)
+                x = x.expand(self.heads, x.shape[0], x.shape[1]).transpose(0, 1)
                 x_l = x_r = x.view(-1, H, C)
 
         assert x_l is not None

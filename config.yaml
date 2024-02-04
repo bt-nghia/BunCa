@@ -3,19 +3,19 @@ Youshu:
   data_path: './datasets'
   batch_size_train: 2048
   batch_size_test: 2048
-  topk: [10, 20, 40, 80]
+  topk: [ 10, 20, 40, 80 ]
   neg_num: 1
-  aug_type: "ED" 
-  ed_interval: 1 
-  embedding_sizes: [64] 
-  num_layerss: [1] 
-  item_level_ratios: [0.2]
-  bundle_level_ratios: [0.2]
-  bundle_agg_ratios: [0.2]
-  lrs: [1.0e-3]
-  l2_regs: [1.0e-4]
-  c_lambdas: [0.04]
-  c_temps: [0.25] # tau
+  aug_type: "ED"
+  ed_interval: 1
+  embedding_sizes: [ 64 ]
+  num_layerss: [ 1 ]
+  item_level_ratios: [ 0.2 ]
+  bundle_level_ratios: [ 0.2 ]
+  bundle_agg_ratios: [ 0.2 ]
+  lrs: [ 1.0e-3 ]
+  l2_regs: [ 1.0e-4 ]
+  c_lambdas: [ 0.04 ]
+  c_temps: [ 0.25 ] # tau
   self_loop: False
   epochs: 100
   seed: 2023
@@ -24,7 +24,7 @@ Youshu:
   file_type: ".txt"
   topk_valid: 20
   nhead: 2
-  contrast_weight: [0.5, 0.5, 0.0, 0.0]
+  contrast_weight: [ 0.5, 0.5, 0.0, 0.0 ]
   extra_layer: True
   test_interval: 1
 
@@ -33,20 +33,20 @@ NetEase:
   data_path: './datasets'
   batch_size_train: 2048
   batch_size_test: 2048
-  topk: [10, 20, 40, 80]
+  topk: [ 10, 20, 40, 80 ]
   neg_num: 1
   aug_type: "ED"
   ed_interval: 1
-  embedding_sizes: [64]
-  num_layerss: [1]
-  lrs: [1.0e-3]
-  item_level_ratios: [0.1]
-  bundle_level_ratios: [0.3]
-  bundle_agg_ratios: [0.1]
-  l2_regs: [1.0e-4]
+  embedding_sizes: [ 64 ]
+  num_layerss: [ 1 ]
+  lrs: [ 1.0e-3 ]
+  item_level_ratios: [ 0.1 ]
+  bundle_level_ratios: [ 0.3 ]
+  bundle_agg_ratios: [ 0.1 ]
+  l2_regs: [ 1.0e-4 ]
   self_loop: False
-  c_lambdas: [0.1]
-  c_temps: [0.25]
+  c_lambdas: [ 0.1 ]
+  c_temps: [ 0.25 ]
   epochs: 200
   topk_valid: 20
   seed: 2023
@@ -55,7 +55,7 @@ NetEase:
   file_type: ".txt"
   topk_valid: 20
   nhead: 2
-  contrast_weight: [0.3, 0.3, 0.2, 0.2]
+  contrast_weight: [ 0.3, 0.3, 0.2, 0.2 ]
   extra_layer: True
   test_interval: 5
 
@@ -65,20 +65,20 @@ iFashion:
   data_path: './datasets'
   batch_size_train: 12000
   batch_size_test: 2048
-  topk: [10, 20, 40, 80]
+  topk: [ 10, 20, 40, 80 ]
   neg_num: 1
   aug_type: "ED"
   ed_interval: 1
-  embedding_sizes: [64]
-  num_layerss: [1]
-  lrs: [1.0e-3]
-  item_level_ratios: [0.2]
-  bundle_level_ratios: [0.2]
-  bundle_agg_ratios: [0]
-  l2_regs: [4.0e-5]
+  embedding_sizes: [ 64 ]
+  num_layerss: [ 1 ]
+  lrs: [ 1.0e-3 ]
+  item_level_ratios: [ 0.2 ]
+  bundle_level_ratios: [ 0.2 ]
+  bundle_agg_ratios: [ 0 ]
+  l2_regs: [ 4.0e-5 ]
   self_loop: False
-  c_lambdas: [0.25]
-  c_temps: [0.2]
+  c_lambdas: [ 0.25 ]
+  c_temps: [ 0.2 ]
   epochs: 70
   topk_valid: 20
   seed: 2023
@@ -87,6 +87,6 @@ iFashion:
   file_type: ".txt"
   topk_valid: 20
   nhead: 5
-  contrast_weight: [0.25, 0.25, 0.25, 0.25]
+  contrast_weight: [ 0.25, 0.25, 0.25, 0.25 ]
   extra_layer: True
   test_interval: 1

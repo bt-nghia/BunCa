@@ -18,7 +18,8 @@ def get_cmd():
     args = parser.parse_args()
     return args
 
-if __name__=='__main__':
+
+if __name__ == '__main__':
     paras = get_cmd().__dict__
     dataset_name = paras["dataset"]
     ibi_fil = paras["ibifil"]
@@ -35,7 +36,6 @@ if __name__=='__main__':
     save_path_bub = f"datasets/{dataset_name}/n_neigh_bub"
     save_path_bib = f"datasets/{dataset_name}/n_neigh_bib"
 
-
     iui = load_sp_mat(path_iui)
     print("iui edge:", iui.getnnz())
     ibi = load_sp_mat(path_ibi)
@@ -44,7 +44,6 @@ if __name__=='__main__':
     print("bub edge:", bub.getnnz())
     bib = load_sp_mat(path_bib)
     print("bib edge:", bib.getnnz())
-
 
     print("statistic")
     ii_b_max = int(ibi.max())
@@ -110,7 +109,7 @@ if __name__=='__main__':
 
     # mask all diag weight
     diag_filter_i = sp.coo_matrix(
-        (np.ones(n_items), ([i for i in range(0, n_items)], [i for i in range(0, n_items)])), 
+        (np.ones(n_items), ([i for i in range(0, n_items)], [i for i in range(0, n_items)])),
         shape=ibi.shape).tocsr()
 
     diag_filter_b = sp.coo_matrix(
@@ -131,7 +130,7 @@ if __name__=='__main__':
     diag_filter_iui, diag_filter_ibi
 
     neighbor_ibi = fil_ibi - diag_filter_ibi.tocsc()
-    neighbor_iui = fil_iui - diag_filter_iui.tocsc() 
+    neighbor_iui = fil_iui - diag_filter_iui.tocsc()
     neighbor_bib = fil_bib - diag_filter_bib.tocsc()
     neighbor_bub = fil_bub - diag_filter_bub.tocsc()
 
