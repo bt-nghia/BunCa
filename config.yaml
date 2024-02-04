@@ -48,7 +48,6 @@ NetEase:
   c_lambdas: [ 0.1 ]
   c_temps: [ 0.25 ]
   epochs: 200
-  topk_valid: 20
   seed: 2023
   hyperth: 2
   sep: "\t"
@@ -80,7 +79,6 @@ iFashion:
   c_lambdas: [ 0.25 ]
   c_temps: [ 0.2 ]
   epochs: 70
-  topk_valid: 20
   seed: 2023
   hyperth: 4
   sep: "\t"
