@@ -14,6 +14,7 @@ import torch
 import torch.optim as optim
 from utility import Datasets
 from models.BunCa import BunCa
+from models.DAM import DAM
 import numpy as np
 
 
@@ -45,7 +46,7 @@ def main():
     paras = get_cmd().__dict__
     dataset_name = paras["dataset"]
 
-    assert paras["model"] in ["BunCa"], "Pls select models from: BunCa"
+    assert paras["model"] in ["BunCa", "DAM"], "Pls select models from: BunCa, DAM"
 
     if "_" in dataset_name:
         conf = conf[dataset_name.split("_")[0]]
@@ -134,6 +135,8 @@ def main():
         # model
         if conf['model'] == 'BunCa':
             model = BunCa(conf, dataset.graphs).to(device)
+        if conf['model'] == 'DAM':
+            model = DAM(conf, dataset.graphs).to(device)
         else:
             raise ValueError("Unimplemented model %s" %(conf["model"]))
 
@@ -158,20 +161,18 @@ def main():
                 ED_drop = False
                 if conf["aug_type"] == "ED" and (batch_anchor + 1) % ed_interval_bs == 0:
                     ED_drop = True
-                bpr_loss, c_loss = model(batch, ED_drop=ED_drop)
-                loss = bpr_loss + conf["c_lambda"] * c_loss
+                bpr_loss = model(batch)
+                loss = bpr_loss
                 loss.backward()
                 optimizer.step()
 
                 loss_scalar = loss.detach()
                 bpr_loss_scalar = bpr_loss.detach()
-                c_loss_scalar = c_loss.detach()
                 run.add_scalar("loss_bpr", bpr_loss_scalar, batch_anchor)
-                run.add_scalar("loss_c", c_loss_scalar, batch_anchor)
                 run.add_scalar("loss", loss_scalar, batch_anchor)
 
-                pbar.set_description("epoch: %d, loss: %.4f, bpr_loss: %.4f, c_loss: %.4f" % (
-                epoch, loss_scalar, bpr_loss_scalar, c_loss_scalar))
+                pbar.set_description("epoch: %d, loss: %.4f, bpr_loss: %.4f" % (
+                epoch, loss_scalar, bpr_loss_scalar))
 
             if epoch % conf["test_interval"] == 0:
                 metrics = {}
@@ -268,9 +269,9 @@ def test(model, dataloader, conf):
 
     device = conf["device"]
     model.eval()
-    rs = model.propagate(test=True)
+    # rs = model.propagate(test=True)
     for users, ground_truth_u_b, train_mask_u_b in dataloader:
-        pred_b = model.evaluate(rs, users.to(device))
+        pred_b = model.evaluate(users.to(device))
         pred_b -= 1e8 * train_mask_u_b.to(device)
         tmp_metrics = get_metrics(tmp_metrics, ground_truth_u_b, pred_b, conf["topk"])
 

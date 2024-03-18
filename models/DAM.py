@@ -39,19 +39,70 @@ class DAM(nn.Module):
         self.dense = nn.Linear(self.embedding_size * 2, self.embedding_size * 2)
         self.ipred = nn.Linear(self.embedding_size * 2, 1)
         self.bpred = nn.Linear(self.embedding_size * 2, 1)
-
-    def propagate(self, test=False):
-        pass
-
-    def forward(self, x):
-        pass
+        self.init_emb()
 
 
-    def evaluate(self, propagate_result, users):
-        users_feature, bundles_feature = propagate_result
-        users_feature_atom, users_feature_non_atom = [i[users] for i in users_feature]
-        bundles_feature_atom, bundles_feature_non_atom = bundles_feature
+    def init_emb(self):
+        self.users_feature = nn.Parameter(torch.FloatTensor(self.num_users, self.embedding_size))
+        nn.init.xavier_normal_(self.users_feature)
+        self.bundles_feature = nn.Parameter(torch.FloatTensor(self.num_bundles, self.embedding_size))
+        nn.init.xavier_normal_(self.bundles_feature)
+        self.items_feature = nn.Parameter(torch.FloatTensor(self.num_items, self.embedding_size))
+        nn.init.xavier_normal_(self.items_feature)
 
-        scores = torch.mm(users_feature_atom, bundles_feature_atom.t()) + torch.mm(users_feature_non_atom,
-                                                                                   bundles_feature_non_atom.t())
+
+    def propagate(self, y, z, task="ub"):
+        x = torch.cat((y, z), dim=1)
+        x = torch.relu(self.sdense(x))
+        x = F.dropout(x, p=0.5, training=self.training)
+        x = torch.relu(self.dense(x))
+        x = F.dropout(x, p=0.5, training=self.training)
+
+        if task == "ub":
+            x = self.bpred(x)
+        else:
+            x = self.ipred(x)
+        return x
+
+
+    def forward(self, batch):
+        userbs, bundles, useris, items = batch
+        
+        # print(bundles)
+        ubs = self.users_feature[userbs].squeeze(dim=1)
+        pb, nb = bundles[:, 0], bundles[:, 1]
+        pb_embedding = self.bundles_feature[pb]
+        nb_embedding = self.bundles_feature[nb]
+
+        # print(ubs.shape, pb_embedding.shape, nb_embedding.shape)
+
+        pub = self.propagate(ubs, pb_embedding, task="ub") #[bs, 1]
+        nub = self.propagate(ubs, nb_embedding, task="ub")
+        b_bpr_loss = torch.mean(-torch.log(torch.sigmoid(pub - nub)))
+
+
+        uis = self.users_feature[useris].squeeze(dim=1)
+        pi, ni = items[:, 0], items[:, 1]
+        pi_embedding = self.items_feature[pi]
+        ni_embedding = self.items_feature[ni]
+
+        pui = self.propagate(uis, pi_embedding, task="ui")
+        nui = self.propagate(uis, ni_embedding, task="ui")
+        i_bpr_loss = torch.mean(-torch.log(torch.sigmoid(pui - nui)))
+
+        loss = b_bpr_loss + i_bpr_loss
+        return loss
+
+
+    @torch.no_grad()
+    def evaluate(self, users):
+        # scores = []
+        users_feature, bundles_feature = self.users_feature, self.bundles_feature
+        # users_feature = users_feature[users]
+        # for x in users_feature:
+        #     sample_x = x.expand(self.num_bundles, self.embedding_size)
+        #     score_each = self.propagate(sample_x, bundles_feature).reshape(1, -1)
+        #     scores.append(score_each)
+        # scores = torch.stack(scores, dim=1).squeeze(dim=1)
+        scores = users_feature @ bundles_feature.T
         return scores
