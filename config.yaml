@@ -26,7 +26,7 @@ Youshu:
   nhead: 2
   contrast_weight: [ 0.5, 0.5, 0.0, 0.0 ]
   extra_layer: True
-  test_interval: 1
+  test_interval: 5
 
 
 NetEase:
@@ -87,4 +87,4 @@ iFashion:
   nhead: 5
   contrast_weight: [ 0.25, 0.25, 0.25, 0.25 ]
   extra_layer: True
-  test_interval: 1
+  test_interval: 5
