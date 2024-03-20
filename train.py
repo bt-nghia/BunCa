@@ -14,6 +14,7 @@ import torch
 import torch.optim as optim
 from utility import Datasets
 from models.BunCa import BunCa
+from models.LightGCN import LightGCN
 import numpy as np
 
 
@@ -45,7 +46,7 @@ def main():
     paras = get_cmd().__dict__
     dataset_name = paras["dataset"]
 
-    assert paras["model"] in ["BunCa"], "Pls select models from: BunCa"
+    assert paras["model"] in ["BunCa", "LightGCN"], "Pls select models from: BunCa, LightGCN"
 
     if "_" in dataset_name:
         conf = conf[dataset_name.split("_")[0]]
@@ -134,6 +135,8 @@ def main():
         # model
         if conf['model'] == 'BunCa':
             model = BunCa(conf, dataset.graphs).to(device)
+        elif conf['model'] == 'LightGCN':
+            model = LightGCN(conf, dataset.graphs).to(device)
         else:
             raise ValueError("Unimplemented model %s" % (conf["model"]))
 
