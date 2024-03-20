@@ -17,7 +17,7 @@ Youshu:
   c_lambdas: [ 0.04 ]
   c_temps: [ 0.25 ] # tau
   self_loop: False
-  epochs: 100
+  epochs: 50
   seed: 2023
   hyperth: 10000
   sep: "\t"
@@ -47,7 +47,7 @@ NetEase:
   self_loop: False
   c_lambdas: [ 0.1 ]
   c_temps: [ 0.25 ]
-  epochs: 200
+  epochs: 50
   seed: 2023
   hyperth: 2
   sep: "\t"
@@ -78,7 +78,7 @@ iFashion:
   self_loop: False
   c_lambdas: [ 0.25 ]
   c_temps: [ 0.2 ]
-  epochs: 70
+  epochs: 50
   seed: 2023
   hyperth: 4
   sep: "\t"

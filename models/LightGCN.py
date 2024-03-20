@@ -282,8 +282,8 @@ class LightGCN(nn.Module):
         BL_users_feature = self.w1 * BL_users_feature
         BL_bundles_feature = self.w2 * BL_bundles_feature
 
-        users_feature = [torch.zeros((self.num_users, self.embedding_size)), BL_users_feature]
-        bundles_feature = [torch.zeros((self.num_bundles, self.embedding_size)), BL_bundles_feature]
+        users_feature = [torch.zeros((self.num_users, self.embedding_size)).to(self.device), BL_users_feature]
+        bundles_feature = [torch.zeros((self.num_bundles, self.embedding_size)).to(self.device), BL_bundles_feature]
 
         return users_feature, bundles_feature
 
